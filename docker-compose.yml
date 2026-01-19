@@ -1,0 +1,101 @@
+services:
+  # MySQL Database
+  fv-db:
+    image: mysql:5.7
+    platform: linux/amd64
+    container_name: fv-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-fv_import_db}
+      MYSQL_USER: ${DB_USERNAME:-fv_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-fv_password_secure_2024}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password_secure_2024}
+    volumes:
+      - fv-db-data:/var/lib/mysql
+    ports:
+      - "3309:3306"
+    networks:
+      - fv-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-root_password_secure_2024}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Laravel Backend API
+  fv-backend:
+    build:
+      context: ./api_fvimport
+      dockerfile: Dockerfile.prod
+    container_name: fv-backend
+    restart: unless-stopped
+    environment:
+      APP_NAME: "FV Auto Importaciones"
+      APP_ENV: production
+      APP_DEBUG: "true"
+      APP_URL: ${APP_URL:-http://localhost:4246}
+      LOG_LEVEL: debug
+
+      DB_CONNECTION: mysql
+      DB_HOST: fv-db
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-fv_import_db}
+      DB_USERNAME: ${DB_USERNAME:-fv_user}
+      DB_PASSWORD: ${DB_PASSWORD:-fv_password_secure_2024}
+
+      CACHE_DRIVER: file
+      SESSION_DRIVER: file
+      QUEUE_CONNECTION: sync
+
+      SANCTUM_STATEFUL_DOMAINS: "localhost:4245,127.0.0.1:4245,fvautoimports.com.pe"
+      SESSION_DOMAIN: ${SESSION_DOMAIN:-.localhost}
+    volumes:
+      - ./api_fvimport/storage:/var/www/html/storage
+      - fv-backend-cache:/var/www/html/bootstrap/cache
+    ports:
+      - "4246:80"
+    depends_on:
+      fv-db:
+        condition: service_healthy
+    networks:
+      - fv-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/api/categories"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Next.js Frontend
+  fv-frontend:
+    build:
+      context: ./fv-frontend
+      dockerfile: Dockerfile.prod
+    container_name: fv-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4246/api}
+      NEXT_PUBLIC_IMAGE_BASE_URL: ${NEXT_PUBLIC_IMAGE_BASE_URL:-http://localhost:4246}
+    ports:
+      - "4245:3000"
+    depends_on:
+      - fv-backend
+    networks:
+      - fv-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  fv-network:
+    driver: bridge
+
+volumes:
+  fv-db-data:
+    driver: local
+  fv-backend-cache:
+    driver: local
