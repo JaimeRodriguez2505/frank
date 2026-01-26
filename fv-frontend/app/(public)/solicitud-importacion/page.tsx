@@ -15,7 +15,11 @@ import {
   FaGlobe,
   FaExclamationTriangle,
   FaTimes,
-  FaCloudUploadAlt
+  FaCloudUploadAlt,
+  FaWhatsapp,
+  FaMoneyBillWave,
+  FaClock,
+  FaInfoCircle
 } from "react-icons/fa"
 import { toast } from "react-toastify"
 import { importRequestService } from "@/services/api"
@@ -350,13 +354,19 @@ const SolicitudImportacion = () => {
                       <span className="text-gray-600 dark:text-gray-400 font-medium">Progreso del formulario</span>
                       <span className="text-primary font-bold">{Math.round(completionPercentage)}%</span>
                     </div>
-                    <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden shadow-inner">
                       <motion.div
-                        className="h-full bg-gradient-to-r from-primary to-fv-gold"
+                        className="h-full bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] shadow-lg"
                         initial={{ scaleX: 0 }}
-                        animate={{ scaleX: completionPercentage / 100 }}
+                        animate={{
+                          scaleX: completionPercentage / 100,
+                          backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
+                        }}
                         style={{ transformOrigin: "left" }}
-                        transition={{ duration: 0.3, ease: "easeOut" }}
+                        transition={{
+                          scaleX: { duration: 0.3, ease: "easeOut" },
+                          backgroundPosition: { duration: 3, repeat: Infinity, ease: "linear" }
+                        }}
                       />
                     </div>
                   </motion.div>
@@ -433,21 +443,73 @@ const SolicitudImportacion = () => {
                       )}
                     </Field>
 
-                    {/* Email y Teléfono */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Teléfono (Prioritario) */}
+                    <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-xl p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <FaPhone className="text-blue-600 dark:text-blue-400" />
+                        <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">Contacto Prioritario</span>
+                      </div>
                       <FloatingLabelInput
-                        label="Correo electrónico"
-                        name="email"
-                        type="email"
-                        icon={<FaEnvelope />}
-                      />
-                      <FloatingLabelInput
-                        label="Número de teléfono"
+                        label="Número de teléfono / WhatsApp"
                         name="telefono"
                         type="tel"
-                        icon={<FaPhone />}
+                        icon={<FaWhatsapp />}
                       />
+                      <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
+                        Te contactaremos por WhatsApp para confirmar disponibilidad y precio
+                      </p>
                     </div>
+
+                    {/* Email */}
+                    <FloatingLabelInput
+                      label="Correo electrónico"
+                      name="email"
+                      type="email"
+                      icon={<FaEnvelope />}
+                    />
+
+                    {/* Payment Information Box */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className="bg-gradient-to-br from-primary/5 to-accent/5 border-2 border-primary/20 rounded-2xl p-6"
+                    >
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-3 bg-primary/10 rounded-full">
+                          <FaMoneyBillWave className="text-primary text-2xl" />
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                          Información de Pago
+                        </h3>
+                      </div>
+                      <ul className="space-y-3 text-gray-700 dark:text-gray-300">
+                        <li className="flex items-start gap-3">
+                          <FaCheckCircle className="text-green-500 mt-1 flex-shrink-0" />
+                          <span className="text-sm">
+                            <strong>Adelanto del 50%</strong> una vez confirmado el repuesto
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <FaWhatsapp className="text-green-500 mt-1 flex-shrink-0" />
+                          <span className="text-sm">
+                            Recibirás un <strong>QR de Yape/Plin</strong> en tu WhatsApp y email
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <FaClock className="text-blue-500 mt-1 flex-shrink-0" />
+                          <span className="text-sm">
+                            <strong>Tiempo estimado:</strong> 1-2 días desde Lima (según disponibilidad)
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <FaInfoCircle className="text-primary mt-1 flex-shrink-0" />
+                          <span className="text-sm">
+                            Podrás hacer seguimiento de tu solicitud con tu email
+                          </span>
+                        </li>
+                      </ul>
+                    </motion.div>
 
                     {/* Marca, Modelo, Año */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

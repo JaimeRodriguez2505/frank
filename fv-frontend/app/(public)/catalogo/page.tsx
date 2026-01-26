@@ -24,7 +24,8 @@ import {
   FaHeart,
   FaExpand,
   FaImage,
-  FaCheck
+  FaCheck,
+  FaBox
 } from "react-icons/fa"
 import { categoryService, productService } from "@/services/api"
 import { IMAGE_BASE_URL } from "@/config/constants"
