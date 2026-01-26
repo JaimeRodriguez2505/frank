@@ -38,6 +38,13 @@ interface Product {
     id: number;
     name: string;
   };
+  // Nuevos campos
+  compatibilidad?: string;
+  origen?: string;
+  marca?: string;
+  peso?: number;
+  condicion: 'nuevo_original' | 'alternativo' | 'usado';
+  disponibilidad: 'en_stock' | 'en_oferta' | 'solo_pedido';
 }
 
 // Skeleton Loader para cards

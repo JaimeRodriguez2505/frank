@@ -37,6 +37,13 @@ interface Product {
     id: number;
     name: string;
   };
+  // Nuevos campos
+  compatibilidad?: string;
+  origen?: string;
+  marca?: string;
+  peso?: number;
+  condicion?: 'nuevo_original' | 'alternativo' | 'usado';
+  disponibilidad?: 'en_stock' | 'en_oferta' | 'solo_pedido';
 }
 
 interface Category {
@@ -72,6 +79,13 @@ const validationSchema = Yup.object({
     .integer("El stock debe ser un número entero")
     .min(0, "El stock no puede ser negativo"),
   categoryId: Yup.number().required("La categoría es requerida"),
+  // Nuevos campos de validación
+  compatibilidad: Yup.string().nullable().max(1000, "Máximo 1000 caracteres"),
+  origen: Yup.string().nullable().max(100, "Máximo 100 caracteres"),
+  marca: Yup.string().nullable().max(100, "Máximo 100 caracteres"),
+  peso: Yup.number().nullable().min(0, "El peso no puede ser negativo").max(99999.99, "Peso máximo excedido"),
+  condicion: Yup.string().required("La condición es requerida").oneOf(['nuevo_original', 'alternativo', 'usado'], "Condición inválida"),
+  disponibilidad: Yup.string().required("La disponibilidad es requerida").oneOf(['en_stock', 'en_oferta', 'solo_pedido'], "Disponibilidad inválida"),
 })
 
 const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = false }: ProductoFormProps) => {
@@ -91,6 +105,13 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
       stock: product?.stock || 0,
       categoryId: product?.category?.id || "",
       imagen: null as File | null,
+      // Nuevos campos
+      compatibilidad: product?.compatibilidad || "",
+      origen: product?.origen || "",
+      marca: product?.marca || "",
+      peso: product?.peso || "",
+      condicion: product?.condicion || "nuevo_original",
+      disponibilidad: product?.disponibilidad || "en_stock",
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -104,6 +125,22 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
         }
         formData.append("stock", values.stock.toString())
         formData.append("categoryId", values.categoryId.toString())
+
+        // Nuevos campos
+        if (values.compatibilidad) {
+          formData.append("compatibilidad", values.compatibilidad)
+        }
+        if (values.origen) {
+          formData.append("origen", values.origen)
+        }
+        if (values.marca) {
+          formData.append("marca", values.marca)
+        }
+        if (values.peso) {
+          formData.append("peso", values.peso.toString())
+        }
+        formData.append("condicion", values.condicion)
+        formData.append("disponibilidad", values.disponibilidad)
 
         // Imagen principal
         if (values.imagen) {
@@ -484,6 +521,229 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
           </motion.p>
         )}
       </motion.div>
+
+      {/* Nuevos campos - Especificaciones del Producto */}
+      <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          Especificaciones del Producto
+        </h3>
+
+        {/* Compatibilidad Field */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="mb-6"
+        >
+          <label htmlFor="compatibilidad" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Compatibilidad
+          </label>
+          <textarea
+            id="compatibilidad"
+            name="compatibilidad"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.compatibilidad}
+            rows={3}
+            className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border ${
+              formik.touched.compatibilidad && formik.errors.compatibilidad
+                ? "border-red-500"
+                : "border-gray-300 dark:border-gray-700"
+            } rounded-xl text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-vertical`}
+            placeholder="Ej: Compatible con Toyota Corolla 2015-2020, Honda Civic 2016-2021"
+          />
+          {formik.touched.compatibilidad && formik.errors.compatibilidad && (
+            <motion.p
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-2 text-sm text-red-500"
+            >
+              {formik.errors.compatibilidad}
+            </motion.p>
+          )}
+        </motion.div>
+
+        {/* Grid para Origen, Marca y Peso */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          {/* Origen Field */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+          >
+            <label htmlFor="origen" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              País de Origen
+            </label>
+            <input
+              id="origen"
+              name="origen"
+              type="text"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.origen}
+              className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border ${
+                formik.touched.origen && formik.errors.origen
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-700"
+              } rounded-xl text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+              placeholder="Ej: Japón, USA, China"
+            />
+            {formik.touched.origen && formik.errors.origen && (
+              <motion.p
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-2 text-sm text-red-500"
+              >
+                {formik.errors.origen}
+              </motion.p>
+            )}
+          </motion.div>
+
+          {/* Marca Field */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+          >
+            <label htmlFor="marca" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Marca
+            </label>
+            <input
+              id="marca"
+              name="marca"
+              type="text"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.marca}
+              className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border ${
+                formik.touched.marca && formik.errors.marca
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-700"
+              } rounded-xl text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+              placeholder="Ej: Bosch, NGK, Denso"
+            />
+            {formik.touched.marca && formik.errors.marca && (
+              <motion.p
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-2 text-sm text-red-500"
+              >
+                {formik.errors.marca}
+              </motion.p>
+            )}
+          </motion.div>
+
+          {/* Peso Field */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0 }}
+          >
+            <label htmlFor="peso" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Peso (kg)
+            </label>
+            <input
+              id="peso"
+              name="peso"
+              type="number"
+              step="0.01"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.peso}
+              className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border ${
+                formik.touched.peso && formik.errors.peso
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-700"
+              } rounded-xl text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+              placeholder="0.00"
+            />
+            {formik.touched.peso && formik.errors.peso && (
+              <motion.p
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-2 text-sm text-red-500"
+              >
+                {formik.errors.peso}
+              </motion.p>
+            )}
+          </motion.div>
+        </div>
+
+        {/* Grid para Condición y Disponibilidad */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Condición Field */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.1 }}
+          >
+            <label htmlFor="condicion" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Condición *
+            </label>
+            <select
+              id="condicion"
+              name="condicion"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.condicion}
+              className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border ${
+                formik.touched.condicion && formik.errors.condicion
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-700"
+              } rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+            >
+              <option value="nuevo_original">Nuevo Original</option>
+              <option value="alternativo">Alternativo</option>
+              <option value="usado">Usado</option>
+            </select>
+            {formik.touched.condicion && formik.errors.condicion && (
+              <motion.p
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-2 text-sm text-red-500"
+              >
+                {formik.errors.condicion}
+              </motion.p>
+            )}
+          </motion.div>
+
+          {/* Disponibilidad Field */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2 }}
+          >
+            <label htmlFor="disponibilidad" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Disponibilidad *
+            </label>
+            <select
+              id="disponibilidad"
+              name="disponibilidad"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.disponibilidad}
+              className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border ${
+                formik.touched.disponibilidad && formik.errors.disponibilidad
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-700"
+              } rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+            >
+              <option value="en_stock">En Stock</option>
+              <option value="en_oferta">En Oferta</option>
+              <option value="solo_pedido">Solo para Pedido</option>
+            </select>
+            {formik.touched.disponibilidad && formik.errors.disponibilidad && (
+              <motion.p
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-2 text-sm text-red-500"
+              >
+                {formik.errors.disponibilidad}
+              </motion.p>
+            )}
+          </motion.div>
+        </div>
+      </div>
 
       {/* Image Field */}
       <motion.div

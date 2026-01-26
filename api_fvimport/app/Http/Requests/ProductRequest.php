@@ -28,7 +28,7 @@ class ProductRequest extends FormRequest
         }
 
         // Convertir strings vacíos a null para campos opcionales (excepto imagen cuando es update)
-        foreach (['description', 'precio_de_oferta', 'stock', 'SKU'] as $field) {
+        foreach (['description', 'precio_de_oferta', 'stock', 'SKU', 'compatibilidad', 'origen', 'marca', 'peso'] as $field) {
             if ($this->has($field) && $this->input($field) === '') {
                 $this->merge([$field => null]);
             }
@@ -56,6 +56,9 @@ class ProductRequest extends FormRequest
         }
         if ($this->has('precio_de_oferta')) {
             $this->merge(['precio_de_oferta' => $normalizeNumber($this->input('precio_de_oferta'))]);
+        }
+        if ($this->has('peso')) {
+            $this->merge(['peso' => $normalizeNumber($this->input('peso'))]);
         }
     }
 
@@ -87,6 +90,14 @@ class ProductRequest extends FormRequest
             // Imágenes adicionales opcionales
             'images' => ['nullable', 'array', 'max:10'], // Máximo 10 imágenes adicionales
             'images.*' => ['file', 'mimes:jpg,jpeg,png,webp,svg,gif,bmp', 'max:10240'], // 10MB máximo cada una
+
+            // Nuevos campos de productos
+            'compatibilidad' => ['nullable', 'string', 'max:1000'],
+            'origen' => ['nullable', 'string', 'max:100'],
+            'marca' => ['nullable', 'string', 'max:100'],
+            'peso' => ['nullable', 'numeric', 'min:0', 'max:99999.99'],
+            'condicion' => ['required', 'in:nuevo_original,alternativo,usado'],
+            'disponibilidad' => ['required', 'in:en_stock,en_oferta,solo_pedido'],
         ];
     }
 }

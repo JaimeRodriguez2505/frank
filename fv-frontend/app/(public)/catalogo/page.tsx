@@ -71,6 +71,13 @@ interface Product {
     id: number
     name: string
   }
+  // Nuevos campos
+  compatibilidad?: string
+  origen?: string
+  marca?: string
+  peso?: number
+  condicion?: 'nuevo_original' | 'alternativo' | 'usado'
+  disponibilidad?: 'en_stock' | 'en_oferta' | 'solo_pedido'
 }
 
 // ==================== COMPONENTE DE CARRUSEL ====================
@@ -470,11 +477,17 @@ const Catalogo = () => {
   const [offerOnly, setOfferOnly] = useState(false)
   const [inStockOnly, setInStockOnly] = useState(false)
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 0])
+  // Nuevos filtros
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([])
+  const [selectedCondiciones, setSelectedCondiciones] = useState<string[]>([])
+  const [orderOnly, setOrderOnly] = useState(false)
 
   // Secciones expandidas
   const [showCategoryFilter, setShowCategoryFilter] = useState(true)
   const [showAvailabilityFilter, setShowAvailabilityFilter] = useState(true)
   const [showPriceFilter, setShowPriceFilter] = useState(true)
+  const [showBrandFilter, setShowBrandFilter] = useState(true)
+  const [showConditionFilter, setShowConditionFilter] = useState(true)
 
   // ==================== CARGAR DATOS ====================
 
@@ -527,6 +540,14 @@ const Catalogo = () => {
     return [Math.floor(Math.min(...prices)), Math.ceil(Math.max(...prices))]
   }, [products])
 
+  // Extraer marcas únicas de productos
+  const uniqueBrands = useMemo(() => {
+    const brands = products
+      .map(p => p.marca)
+      .filter((marca): marca is string => !!marca)
+    return Array.from(new Set(brands)).sort()
+  }, [products])
+
   // Inicializar rango de precios
   useEffect(() => {
     if (products.length > 0 && priceRange[0] === 0 && priceRange[1] === 0) {
@@ -574,6 +595,21 @@ const Catalogo = () => {
       })
     }
 
+    // Filtrar por marca
+    if (selectedBrands.length > 0) {
+      filtered = filtered.filter(p => p.marca && selectedBrands.includes(p.marca))
+    }
+
+    // Filtrar por condición
+    if (selectedCondiciones.length > 0) {
+      filtered = filtered.filter(p => p.condicion && selectedCondiciones.includes(p.condicion))
+    }
+
+    // Filtrar "solo para pedido"
+    if (orderOnly) {
+      filtered = filtered.filter(p => p.disponibilidad === 'solo_pedido')
+    }
+
     // Ordenar
     switch (sortOption) {
       case "price_asc":
@@ -603,7 +639,10 @@ const Catalogo = () => {
     sortOption,
     offerOnly,
     inStockOnly,
-    priceRange
+    priceRange,
+    selectedBrands,
+    selectedCondiciones,
+    orderOnly
   ])
 
   // ==================== MANEJADORES ====================
@@ -616,6 +655,22 @@ const Catalogo = () => {
     )
   }
 
+  const handleBrandToggle = (brand: string) => {
+    setSelectedBrands(prev =>
+      prev.includes(brand)
+        ? prev.filter(b => b !== brand)
+        : [...prev, brand]
+    )
+  }
+
+  const handleCondicionToggle = (condicion: string) => {
+    setSelectedCondiciones(prev =>
+      prev.includes(condicion)
+        ? prev.filter(c => c !== condicion)
+        : [...prev, condicion]
+    )
+  }
+
   const clearFilters = () => {
     setSelectedCategories([])
     setSearchTerm("")
@@ -623,6 +678,9 @@ const Catalogo = () => {
     setOfferOnly(false)
     setInStockOnly(false)
     setPriceRange([computedMinPrice, computedMaxPrice])
+    setSelectedBrands([])
+    setSelectedCondiciones([])
+    setOrderOnly(false)
     setCurrentPage(1)
   }
 
@@ -945,6 +1003,22 @@ const Catalogo = () => {
                               </span>
                             </div>
                           </label>
+                          <label className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer group transition-colors">
+                            <input
+                              type="checkbox"
+                              checked={orderOnly}
+                              onChange={(e) => setOrderOnly(e.target.checked)}
+                              className="w-4 h-4 accent-primary rounded"
+                            />
+                            <div className="flex-1 flex items-center gap-2">
+                              <div className="p-1.5 bg-blue-500/10 rounded-lg group-hover:scale-110 transition-transform">
+                                <FaBox className="text-blue-500 text-xs" />
+                              </div>
+                              <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">
+                                Solo para pedido
+                              </span>
+                            </div>
+                          </label>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -1013,6 +1087,144 @@ const Catalogo = () => {
                           >
                             Restablecer rango de precio
                           </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Marca */}
+                  {uniqueBrands.length > 0 && (
+                    <div>
+                      <button
+                        onClick={() => setShowBrandFilter(!showBrandFilter)}
+                        className="w-full flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                      >
+                        <span className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                          <FaTag className="text-primary group-hover:scale-110 transition-transform" />
+                          Marca
+                        </span>
+                        <FaChevronDown
+                          className={`transition-transform text-gray-400 ${showBrandFilter ? "rotate-180" : ""}`}
+                        />
+                      </button>
+
+                      <AnimatePresence>
+                        {showBrandFilter && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="mt-3 space-y-1 overflow-hidden"
+                          >
+                            {uniqueBrands.map((brand) => {
+                              const isSelected = selectedBrands.includes(brand)
+
+                              return (
+                                <motion.div
+                                  key={brand}
+                                  className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group cursor-pointer"
+                                  onClick={() => handleBrandToggle(brand)}
+                                  whileHover={{ x: 4 }}
+                                  transition={{ duration: 0.2 }}
+                                >
+                                  <div className="relative w-5 h-5 flex-shrink-0">
+                                    <motion.div
+                                      className="absolute inset-0 border-2 rounded"
+                                      animate={{
+                                        borderColor: isSelected ? "var(--primary)" : "rgb(209, 213, 219)"
+                                      }}
+                                      transition={{ duration: 0.2 }}
+                                    />
+                                    <motion.div
+                                      className="absolute inset-0 bg-primary rounded flex items-center justify-center"
+                                      variants={checkboxVariants}
+                                      initial="unchecked"
+                                      animate={isSelected ? "checked" : "unchecked"}
+                                    >
+                                      <FaCheck className="text-white text-xs" />
+                                    </motion.div>
+                                  </div>
+                                  <div
+                                    className={`flex-1 text-sm ${
+                                      isSelected ? "text-primary font-semibold" : "text-gray-700 dark:text-gray-300"
+                                    }`}
+                                  >
+                                    {brand}
+                                  </div>
+                                </motion.div>
+                              )
+                            })}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
+
+                  {/* Condición */}
+                  <div>
+                    <button
+                      onClick={() => setShowConditionFilter(!showConditionFilter)}
+                      className="w-full flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                    >
+                      <span className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                        <FaCheckCircle className="text-primary group-hover:scale-110 transition-transform" />
+                        Estado
+                      </span>
+                      <FaChevronDown
+                        className={`transition-transform text-gray-400 ${showConditionFilter ? "rotate-180" : ""}`}
+                      />
+                    </button>
+
+                    <AnimatePresence>
+                      {showConditionFilter && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="mt-3 space-y-1 overflow-hidden"
+                        >
+                          {[
+                            { value: 'nuevo_original', label: 'Nuevo Original' },
+                            { value: 'alternativo', label: 'Alternativo' },
+                            { value: 'usado', label: 'Usado' }
+                          ].map(({ value, label }) => {
+                            const isSelected = selectedCondiciones.includes(value)
+
+                            return (
+                              <motion.div
+                                key={value}
+                                className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group cursor-pointer"
+                                onClick={() => handleCondicionToggle(value)}
+                                whileHover={{ x: 4 }}
+                                transition={{ duration: 0.2 }}
+                              >
+                                <div className="relative w-5 h-5 flex-shrink-0">
+                                  <motion.div
+                                    className="absolute inset-0 border-2 rounded"
+                                    animate={{
+                                      borderColor: isSelected ? "var(--primary)" : "rgb(209, 213, 219)"
+                                    }}
+                                    transition={{ duration: 0.2 }}
+                                  />
+                                  <motion.div
+                                    className="absolute inset-0 bg-primary rounded flex items-center justify-center"
+                                    variants={checkboxVariants}
+                                    initial="unchecked"
+                                    animate={isSelected ? "checked" : "unchecked"}
+                                  >
+                                    <FaCheck className="text-white text-xs" />
+                                  </motion.div>
+                                </div>
+                                <div
+                                  className={`flex-1 text-sm ${
+                                    isSelected ? "text-primary font-semibold" : "text-gray-700 dark:text-gray-300"
+                                  }`}
+                                >
+                                  {label}
+                                </div>
+                              </motion.div>
+                            )
+                          })}
                         </motion.div>
                       )}
                     </AnimatePresence>

@@ -122,4 +122,47 @@ class ImportRequestController extends Controller
             'message' => 'Import request deleted successfully'
         ], Response::HTTP_OK);
     }
+
+    /**
+     * GET /api/import-requests/tracking/{email} - Get requests by email (public)
+     */
+    public function getByEmail(string $email): AnonymousResourceCollection
+    {
+        $requests = ImportRequest::where('email', $email)
+            ->latest()
+            ->get();
+
+        return ImportRequestResource::collection($requests);
+    }
+
+    /**
+     * POST /api/import-requests/{id}/payment-proof - Upload payment proof (public)
+     */
+    public function uploadPaymentProof(Request $request, ImportRequest $importRequest): JsonResponse
+    {
+        $validated = $request->validate([
+            'proof' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120' // 5MB max
+        ]);
+
+        // Delete old proof if exists
+        if ($importRequest->comprobante_pago) {
+            $oldPath = str_replace('/storage/', '', $importRequest->comprobante_pago);
+            if (Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
+            }
+        }
+
+        // Store new proof
+        $file = $request->file('proof');
+        $path = $file->store('payment-proofs', 'public');
+
+        $importRequest->update([
+            'comprobante_pago' => '/storage/' . $path
+        ]);
+
+        return response()->json([
+            'message' => 'Payment proof uploaded successfully',
+            'data' => new ImportRequestResource($importRequest)
+        ], Response::HTTP_OK);
+    }
 }

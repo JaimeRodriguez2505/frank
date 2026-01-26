@@ -63,6 +63,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Solicitudes de importación
 Route::post('/import-requests', [ImportRequestController::class, 'store']); // público
+Route::get('/import-requests/tracking/{email}', [ImportRequestController::class, 'getByEmail']); // público - tracking
+Route::post('/import-requests/{importRequest}/payment-proof', [ImportRequestController::class, 'uploadPaymentProof']); // público
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/import-requests', [ImportRequestController::class, 'index']);
     Route::get('/import-requests/{importRequest}', [ImportRequestController::class, 'show']);

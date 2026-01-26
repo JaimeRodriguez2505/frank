@@ -16,11 +16,29 @@ use Illuminate\Support\Facades\Storage;
 class ProductController extends Controller
 {
     /**
-     * GET /api/products - Lista completa con relaciones
+     * GET /api/products - Lista completa con relaciones y filtros opcionales
+     * Soporta filtros: ?marca=X&condicion=Y&disponibilidad=Z
      */
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $products = Product::with(['category', 'images'])->get();
+        $query = Product::with(['category', 'images']);
+
+        // Filtro por marca
+        if ($request->has('marca') && $request->marca) {
+            $query->where('marca', $request->marca);
+        }
+
+        // Filtro por condición
+        if ($request->has('condicion') && $request->condicion) {
+            $query->where('condicion', $request->condicion);
+        }
+
+        // Filtro por disponibilidad
+        if ($request->has('disponibilidad') && $request->disponibilidad) {
+            $query->where('disponibilidad', $request->disponibilidad);
+        }
+
+        $products = $query->get();
 
         return ProductResource::collection($products);
     }

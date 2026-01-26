@@ -4,30 +4,30 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Base colors - Modo Día FV Auto Importaciones */
-  --background: #F8F9FA; /* Blanco roto para no cansar la vista */
-  --foreground: #121212; /* Negro del logo */
-  --card: #FFFFFF; /* Blanco puro para resaltar elementos */
-  --card-foreground: #121212;
-  --popover: #FFFFFF;
-  --popover-foreground: #121212;
+  /* Base colors - Nueva paleta FV Auto Importaciones */
+  --background: #F6F1F8; /* Fondo principal lavanda suave */
+  --foreground: #322931; /* Texto principal morado oscuro */
+  --card: #CFC1CA; /* Tarjetas/secciones lavanda */
+  --card-foreground: #322931;
+  --popover: #CFC1CA;
+  --popover-foreground: #322931;
 
-  /* Brand colors - FV Auto Importaciones */
-  --primary: #C9A961; /* Dorado vibrante del logo */
-  --primary-foreground: #121212; /* Texto negro sobre dorado */
-  --secondary: #F8F9FA;
-  --secondary-foreground: #121212;
+  /* Brand colors - Nueva paleta roja */
+  --primary: #A03838; /* Rojo principal (CTA/precios) */
+  --primary-foreground: #FFFFFF; /* Texto blanco sobre rojo */
+  --secondary: #E8E1EA; /* Fondo secundario lavanda claro */
+  --secondary-foreground: #322931;
 
   /* UI colors */
-  --muted: #F8F9FA;
-  --muted-foreground: #454545; /* Gris oscuro para mejor lectura */
-  --accent: #F8F9FA;
-  --accent-foreground: #121212;
+  --muted: #E8E1EA;
+  --muted-foreground: #626570; /* Texto secundario gris */
+  --accent: #CA897B; /* Rojo acento/degradados */
+  --accent-foreground: #322931;
   --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
-  --border: #E5E7EB; /* Gris claro para bordes */
-  --input: #E5E7EB;
-  --ring: #C29B40; /* Dorado para focus ring */
+  --border: #9898A5; /* Bordes/UI gris */
+  --input: #9898A5;
+  --ring: #A03838; /* Focus ring rojo */
 
   /* Chart colors */
   --chart-1: oklch(0.646 0.222 41.116);
@@ -55,30 +55,30 @@
 }
 
 .dark {
-  /* Base colors - Modo Noche FV Auto Importaciones (Negro Profundo) */
-  --background: #050505; /* Negro aún más profundo */
-  --foreground: #FFFFFF; /* Blanco puro para títulos */
-  --card: #121212; /* Gris muy oscuro casi negro */
-  --card-foreground: #FFFFFF;
-  --popover: #121212;
-  --popover-foreground: #FFFFFF;
+  /* Base colors - Modo Noche con paleta nueva */
+  --background: #1a1518; /* Versión oscura del morado */
+  --foreground: #F6F1F8;
+  --card: #2a2328; /* Tarjetas morado oscuro */
+  --card-foreground: #F6F1F8;
+  --popover: #2a2328;
+  --popover-foreground: #F6F1F8;
 
-  /* Brand colors - FV Auto Importaciones */
-  --primary: #D4AF37; /* Dorado metálico */
-  --primary-foreground: #000000; 
-  --secondary: #1A1A1A;
-  --secondary-foreground: #FFFFFF;
+  /* Brand colors - Dark mode */
+  --primary: #CA897B; /* Rojo acento en dark */
+  --primary-foreground: #1a1518;
+  --secondary: #2a2328;
+  --secondary-foreground: #F6F1F8;
 
   /* UI colors - dark mode */
-  --muted: #1A1A1A;
-  --muted-foreground: #A3A3A3; 
-  --accent: #262626;
-  --accent-foreground: #FFFFFF;
+  --muted: #2a2328;
+  --muted-foreground: #9898A5;
+  --accent: #A03838; /* Rojo principal en dark */
+  --accent-foreground: #F6F1F8;
   --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
-  --border: #262626; /* Bordes más sutiles */
-  --input: #262626;
-  --ring: #D4AF37;
+  --border: #626570;
+  --input: #626570;
+  --ring: #CA897B;
 
   /* Mejora de contraste para elementos span en modo oscuro */
   & span {
@@ -129,11 +129,11 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* FV Auto Importaciones color mappings */
-  --color-fv-gold: #C9A961;
-  --color-fv-gold-bright: #D4AF37;
-  --color-fv-black: #0A0A0A;
-  --color-fv-gray: #161616;
+  /* FV Auto Importaciones color mappings - Nueva paleta */
+  --color-fv-red: #A03838;
+  --color-fv-red-accent: #CA897B;
+  --color-fv-purple: #322931;
+  --color-fv-lavender: #F6F1F8;
 }
 
 @layer base {
@@ -238,42 +238,42 @@
       -webkit-backdrop-filter: blur(12px) saturate(140%);
     }
   }
-  /* FV Auto Importaciones utility classes */
-  .text-fv-gold {
-    color: var(--color-fv-gold);
+  /* FV Auto Importaciones utility classes - Nueva paleta */
+  .text-fv-red {
+    color: var(--color-fv-red);
   }
-  .text-fv-gold-bright {
-    color: var(--color-fv-gold-bright);
+  .text-fv-red-accent {
+    color: var(--color-fv-red-accent);
   }
-  .text-fv-black {
-    color: var(--color-fv-black);
+  .text-fv-purple {
+    color: var(--color-fv-purple);
   }
-  .text-fv-gray {
-    color: var(--color-fv-gray);
+  .text-fv-lavender {
+    color: var(--color-fv-lavender);
   }
-  .bg-fv-gold {
-    background-color: var(--color-fv-gold);
+  .bg-fv-red {
+    background-color: var(--color-fv-red);
   }
-  .bg-fv-gold-bright {
-    background-color: var(--color-fv-gold-bright);
+  .bg-fv-red-accent {
+    background-color: var(--color-fv-red-accent);
   }
-  .bg-fv-black {
-    background-color: var(--color-fv-black);
+  .bg-fv-purple {
+    background-color: var(--color-fv-purple);
   }
-  .bg-fv-gray {
-    background-color: var(--color-fv-gray);
+  .bg-fv-lavender {
+    background-color: var(--color-fv-lavender);
   }
-  .border-fv-gold {
-    border-color: var(--color-fv-gold);
+  .border-fv-red {
+    border-color: var(--color-fv-red);
   }
-  .border-fv-gold-bright {
-    border-color: var(--color-fv-gold-bright);
+  .border-fv-red-accent {
+    border-color: var(--color-fv-red-accent);
   }
-  .border-fv-black {
-    border-color: var(--color-fv-black);
+  .border-fv-purple {
+    border-color: var(--color-fv-purple);
   }
-  .border-fv-gray {
-    border-color: var(--color-fv-gray);
+  .border-fv-lavender {
+    border-color: var(--color-fv-lavender);
   }
   .logo-img {
     height: 4rem; /* h-16 equivalente */
@@ -311,18 +311,18 @@
   /* GLOW EFFECTS */
   /* ============================================ */
   .glow-primary {
-    box-shadow: 0 0 20px rgba(201, 169, 97, 0.3);
+    box-shadow: 0 0 20px rgba(160, 56, 56, 0.3);
   }
 
   .glow-primary-strong {
-    box-shadow: 0 0 40px rgba(201, 169, 97, 0.6);
+    box-shadow: 0 0 40px rgba(160, 56, 56, 0.6);
   }
 
   /* ============================================ */
   /* GRADIENT TEXT UTILITIES */
   /* ============================================ */
   .text-gradient-primary {
-    @apply bg-gradient-to-r from-primary via-fv-gold to-primary bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary via-fv-red-accent to-primary bg-clip-text text-transparent;
     background-size: 200% auto;
   }
 

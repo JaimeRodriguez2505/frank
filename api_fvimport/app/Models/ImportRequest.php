@@ -39,15 +39,24 @@ class ImportRequest extends Model
         'nivel_urgencia',
         'imagenes',
         'estado',
+        'adelanto_requerido',
+        'estado_pago',
+        'qr_pago',
+        'metodo_pago',
+        'tiempo_estimado_dias',
+        'comprobante_pago',
     ];
 
     protected $casts = [
         'imagenes' => 'array',
+        'adelanto_requerido' => 'decimal:2',
+        'tiempo_estimado_dias' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
 
     protected $attributes = [
         'estado' => 'pendiente',
+        'estado_pago' => 'pendiente',
     ];
 }

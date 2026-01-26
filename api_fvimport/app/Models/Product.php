@@ -34,6 +34,12 @@ class Product extends Model
         'SKU',
         'imagen',
         'category_id',
+        'compatibilidad',
+        'origen',
+        'marca',
+        'peso',
+        'condicion',
+        'disponibilidad',
     ];
 
     protected $casts = [
@@ -41,6 +47,7 @@ class Product extends Model
         'precio_de_oferta' => 'decimal:2',
         'stock' => 'integer',
         'category_id' => 'integer',
+        'peso' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
