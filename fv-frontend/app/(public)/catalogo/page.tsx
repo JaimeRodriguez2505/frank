@@ -286,13 +286,18 @@ const QuickViewModal = ({ product, onClose, onAddToCart, getWhatsAppLink }: Quic
                 />
 
                 {/* Badges */}
-                {product.precio_de_oferta && (
-                  <div className="absolute top-4 left-4 flex flex-col gap-2">
-                    <div className="bg-gradient-to-r from-red-500 to-fv-gold text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                <div className="absolute top-4 left-4 flex flex-col gap-2">
+                  {product.precio_de_oferta && (
+                    <div className="bg-gradient-to-r from-red-500 to-primary text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
                       -{discount}% OFF
                     </div>
-                  </div>
-                )}
+                  )}
+                  {product.disponibilidad === 'solo_pedido' && (
+                    <div className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                      Solo para Pedido
+                    </div>
+                  )}
+                </div>
                 {product.stock <= 5 && product.stock > 0 && (
                   <div className="absolute top-4 right-4 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
                     ¡Solo {product.stock} disponibles!
@@ -365,6 +370,72 @@ const QuickViewModal = ({ product, onClose, onAddToCart, getWhatsAppLink }: Quic
                 <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
                   {product.description || "Sin descripción disponible"}
                 </p>
+
+                {/* Specifications */}
+                {(product.compatibilidad || product.origen || product.marca || product.peso || product.condicion) && (
+                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-5 mb-6 space-y-3">
+                    <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wide mb-3">
+                      Especificaciones
+                    </h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      {product.compatibilidad && (
+                        <div className="col-span-2">
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide block mb-1">
+                            Compatibilidad
+                          </span>
+                          <span className="text-sm text-gray-900 dark:text-white">
+                            {product.compatibilidad}
+                          </span>
+                        </div>
+                      )}
+                      {product.marca && (
+                        <div>
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide block mb-1">
+                            Marca
+                          </span>
+                          <span className="text-sm text-gray-900 dark:text-white font-semibold">
+                            {product.marca}
+                          </span>
+                        </div>
+                      )}
+                      {product.origen && (
+                        <div>
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide block mb-1">
+                            Origen
+                          </span>
+                          <span className="text-sm text-gray-900 dark:text-white">
+                            {product.origen}
+                          </span>
+                        </div>
+                      )}
+                      {product.peso && (
+                        <div>
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide block mb-1">
+                            Peso
+                          </span>
+                          <span className="text-sm text-gray-900 dark:text-white">
+                            {product.peso} kg
+                          </span>
+                        </div>
+                      )}
+                      {product.condicion && (
+                        <div>
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide block mb-1">
+                            Condición
+                          </span>
+                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
+                            product.condicion === 'nuevo_original' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+                            product.condicion === 'alternativo' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
+                            'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400'
+                          }`}>
+                            {product.condicion === 'nuevo_original' ? 'Nuevo Original' :
+                             product.condicion === 'alternativo' ? 'Alternativo' : 'Usado'}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Price */}
                 <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-2xl p-6 mb-6">

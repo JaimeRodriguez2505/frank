@@ -18,6 +18,8 @@ import {
   FaCheckCircle,
   FaLayerGroup,
   FaHeart,
+  FaBox,
+  FaTag,
 } from "react-icons/fa"
 import api, { productService } from "@/services/api"
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion"
@@ -251,6 +253,7 @@ const Home = () => {
   interface Banner {
     image: string
     title: string
+    subtitle?: string
   }
 
   const fallbackBanners: Banner[] = [
@@ -429,18 +432,68 @@ const Home = () => {
           <div className="absolute inset-0 bg-black/40" />
         </div>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20">
-          <motion.a
-            href={`https://wa.me/51967411110?text=${encodeURIComponent("Deseo adquirir la promoción " + (displayBanners[currentSlide]?.title ?? ""))}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-6 md:px-8 py-3.5 md:py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-full shadow-xl ring-2 ring-white/70 font-semibold flex items-center gap-3 whitespace-nowrap hover:shadow-2xl transition-shadow"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+        {/* Banner Content */}
+        <div className="relative z-20 max-w-5xl mx-auto px-4 text-center">
+          <motion.h1
+            key={currentSlide}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.6 }}
+            className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-2xl"
           >
-            <FaWhatsapp className="text-xl md:text-2xl" />
-            <span className="text-sm md:text-base">Adquiere la promoción</span>
-          </motion.a>
+            {displayBanners[currentSlide]?.title}
+          </motion.h1>
+          {displayBanners[currentSlide]?.subtitle && (
+            <motion.p
+              key={`subtitle-${currentSlide}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-lg md:text-2xl text-white/90 mb-8 drop-shadow-lg max-w-3xl mx-auto"
+            >
+              {displayBanners[currentSlide].subtitle}
+            </motion.p>
+          )}
+
+          {/* Action Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="flex flex-wrap items-center justify-center gap-4"
+          >
+            <motion.a
+              href="/catalogo"
+              className="px-6 md:px-8 py-3.5 md:py-4 bg-gradient-to-r from-primary to-accent text-white rounded-full shadow-xl ring-2 ring-white/70 font-semibold flex items-center gap-3 whitespace-nowrap hover:shadow-2xl transition-all"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaShoppingCart className="text-xl" />
+              <span className="text-sm md:text-base">Ver Catálogo</span>
+            </motion.a>
+
+            <motion.a
+              href="/solicitud-importacion"
+              className="px-6 md:px-8 py-3.5 md:py-4 bg-white/10 backdrop-blur-md text-white rounded-full shadow-xl ring-2 ring-white/50 font-semibold flex items-center gap-3 whitespace-nowrap hover:bg-white/20 transition-all"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaBox className="text-xl" />
+              <span className="text-sm md:text-base">Importar Repuesto</span>
+            </motion.a>
+
+            <motion.a
+              href="/catalogo?offerOnly=true"
+              className="px-6 md:px-8 py-3.5 md:py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-full shadow-xl ring-2 ring-white/70 font-semibold flex items-center gap-3 whitespace-nowrap hover:shadow-2xl transition-all"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaTag className="text-xl" />
+              <span className="text-sm md:text-base">Promociones</span>
+            </motion.a>
+          </motion.div>
         </div>
 
         {/* Carousel Controls */}
