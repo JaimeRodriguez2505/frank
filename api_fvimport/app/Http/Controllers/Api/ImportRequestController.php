@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ImportRequestRequest;
 use App\Http\Resources\ImportRequestResource;
 use App\Models\ImportRequest;
+use App\Models\ImportRequestEvent;
 use App\Services\ImageOptimizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -99,6 +100,64 @@ class ImportRequestController extends Controller
         $importRequest->update($validated);
 
         return new ImportRequestResource($importRequest);
+    }
+
+    /**
+     * PUT /api/import-requests/{id}/tracking - Update tracking fields (protected)
+     */
+    public function updateTracking(Request $request, ImportRequest $importRequest): ImportRequestResource
+    {
+        $validated = $request->validate([
+            'codigo_cliente' => 'nullable|string|max:50',
+            'progreso' => 'nullable|integer|min:0|max:100',
+            'etapa_logistica' => 'nullable|string|max:100',
+            'ciudad_destino' => 'nullable|string|max:120',
+            'eta_fecha' => 'nullable|date',
+            'comentario_cliente' => 'nullable|string',
+            'comentario_interno' => 'nullable|string',
+        ]);
+
+        $importRequest->update($validated);
+
+        return new ImportRequestResource($importRequest);
+    }
+
+    /**
+     * POST /api/import-requests/{id}/events - Add tracking event (protected)
+     */
+    public function addEvent(Request $request, ImportRequest $importRequest): ImportRequestResource
+    {
+        $validated = $request->validate([
+            'estado' => 'nullable|in:pendiente,en_proceso,completado,cancelado',
+            'progreso' => 'nullable|integer|min:0|max:100',
+            'etapa_logistica' => 'nullable|string|max:100',
+            'nota' => 'nullable|string',
+            'ocurrido_en' => 'nullable|date',
+            'visible_cliente' => 'nullable|boolean',
+        ]);
+
+        ImportRequestEvent::create([
+            'import_request_id' => $importRequest->id,
+            'estado' => $validated['estado'] ?? $importRequest->estado,
+            'progreso' => $validated['progreso'] ?? $importRequest->progreso ?? 0,
+            'etapa_logistica' => $validated['etapa_logistica'] ?? $importRequest->etapa_logistica,
+            'nota' => $validated['nota'] ?? null,
+            'ocurrido_en' => $validated['ocurrido_en'] ?? now(),
+            'visible_cliente' => $validated['visible_cliente'] ?? true,
+        ]);
+
+        if (array_key_exists('progreso', $validated)) {
+            $importRequest->progreso = $validated['progreso'];
+        }
+        if (array_key_exists('estado', $validated)) {
+            $importRequest->estado = $validated['estado'];
+        }
+        if (array_key_exists('etapa_logistica', $validated)) {
+            $importRequest->etapa_logistica = $validated['etapa_logistica'];
+        }
+        $importRequest->save();
+
+        return new ImportRequestResource($importRequest->refresh());
     }
 
     /**

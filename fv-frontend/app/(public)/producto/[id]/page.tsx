@@ -132,7 +132,7 @@ function DetalleProducto() {
   const getWhatsAppLink = (product: Product) => {
     if (!product) return "#"
     const message = `Hola, estoy interesado en el producto "${product.name}" con precio ${product.precio_de_oferta ? `S/ ${product.precio_de_oferta}` : `S/ ${product.price}`}. ¿Podrías darme más información?`
-    return `https://wa.me/51967411110?text=${encodeURIComponent(message)}`
+    return `https://wa.me/51940226938?text=${encodeURIComponent(message)}`
   }
 
   // Estructura del carrito para evitar 'any'
@@ -250,12 +250,19 @@ function DetalleProducto() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-black relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-background via-white to-secondary/70 dark:from-gray-950 dark:via-gray-900 dark:to-black relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 opacity-30 pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/20 rounded-full filter blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-72 h-72 bg-primary/20 rounded-full filter blur-3xl"></div>
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/15 rounded-full filter blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-72 h-72 bg-accent/15 rounded-full filter blur-3xl"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/10 rounded-full filter blur-3xl"></div>
+      </div>
+
+      {/* Speed streak accents */}
+      <div className="pointer-events-none absolute inset-x-0 top-12 z-10 overflow-hidden">
+        <div className="speed-streak top-0 left-0"></div>
+        <div className="speed-streak streak-2 top-8 left-16"></div>
+        <div className="speed-streak streak-3 top-16 left-32"></div>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

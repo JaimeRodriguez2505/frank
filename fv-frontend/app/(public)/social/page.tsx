@@ -401,12 +401,18 @@ const CallToAction = () => {
 const Social = () => {
   return (
     <div>
-      <div className="min-h-screen bg-gradient-to-br from-primary via-white to-primary dark:from-gray-950 dark:via-gray-900 dark:to-black relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-background via-white to-secondary/70 dark:from-gray-950 dark:via-gray-900 dark:to-black relative overflow-hidden">
         {/* Decorative background elements */}
         <div className="absolute inset-0 opacity-30 pointer-events-none">
           <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full filter blur-3xl"></div>
           <div className="absolute bottom-20 right-10 w-72 h-72 bg-fv-gold/20 rounded-full filter blur-3xl"></div>
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/10 rounded-full filter blur-3xl"></div>
+        </div>
+        {/* Speed streak accents */}
+        <div className="pointer-events-none absolute inset-x-0 top-10 z-10 overflow-hidden">
+          <div className="speed-streak top-0 left-0"></div>
+          <div className="speed-streak streak-2 top-8 left-16"></div>
+          <div className="speed-streak streak-3 top-16 left-32"></div>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

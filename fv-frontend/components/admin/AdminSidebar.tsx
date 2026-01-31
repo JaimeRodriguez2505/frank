@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { FaHome, FaTags, FaLayerGroup, FaComments, FaTimes, FaTachometerAlt, FaBoxOpen, FaQuoteRight, FaEnvelope, FaBars, FaStar, FaFileImport } from "react-icons/fa"
+import { FaHome, FaTags, FaLayerGroup, FaComments, FaTimes, FaTachometerAlt, FaBoxOpen, FaQuoteRight, FaEnvelope, FaBars, FaStar, FaFileImport, FaImage } from "react-icons/fa"
 import { useState, useEffect } from "react"
 
 interface AdminSidebarProps {
@@ -63,6 +63,7 @@ const AdminSidebar = ({ onClose }: AdminSidebarProps) => {
       title: "Marketing",
       links: [
         { to: "/admin/banners", icon: FaTags, label: "Banners" },
+        { to: "/admin/logos", icon: FaImage, label: "Logos de Marcas" },
         { to: "/admin/destacados", icon: FaStar, label: "Destacados" }
       ]
     }

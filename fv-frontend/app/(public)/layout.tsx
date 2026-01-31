@@ -6,7 +6,6 @@ import styled from "styled-components"
 import ThemeToggle from "@/components/ThemeToggle"
 import { FaWhatsapp } from "react-icons/fa"
 import { motion } from "framer-motion"
-import { PageTransition } from "@/components/layout/PageTransition"
 
 const PublicThemeVars = styled.div`
   /* Mapear variables usadas en el sitio público a las variables globales */
@@ -34,9 +33,7 @@ export default function PublicLayout({
       <div className="flex flex-col min-h-screen bg-background text-foreground">
         <Header />
         <main className="flex-grow pb-8 w-full">
-          <PageTransition>
-            {children}
-          </PageTransition>
+          {children}
         </main>
         <div className="h-auto lg:h-[300px]">
           <Footer />
@@ -49,7 +46,7 @@ export default function PublicLayout({
         {/* Botón fijo de WhatsApp con animación flotante */}
         <motion.div className="fixed bottom-4 right-4 z-[1100]">
           <motion.a
-            href="https://wa.me/51967411110?text=Hola,%20me%20gustaría%20obtener%20más%20información"
+            href="https://wa.me/51940226938?text=Hola,%20me%20gustaría%20obtener%20más%20información"
             target="_blank"
             rel="noopener noreferrer"
             className="relative flex items-center justify-center w-14 h-14 bg-green-500 rounded-full shadow-lg overflow-hidden"
@@ -87,4 +84,3 @@ export default function PublicLayout({
     </PublicThemeVars>
   )
 }
-

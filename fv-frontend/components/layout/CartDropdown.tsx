@@ -112,7 +112,7 @@ const CartDropdown = ({ cartCount, onCartUpdate }: CartDropdownProps) => {
   }
 
   const getWhatsAppLink = () => {
-    if (cartItems.length === 0) return "https://wa.me/51967411110"
+    if (cartItems.length === 0) return "https://wa.me/51940226938"
     const lines = cartItems.map(
       (item) =>
         `• ${item.name} x${item.quantity} — ${formatCurrency(item.price)} c/u = ${formatCurrency(
@@ -122,7 +122,7 @@ const CartDropdown = ({ cartCount, onCartUpdate }: CartDropdownProps) => {
     const totalLine = `\nTotal: ${formatCurrency(cartTotal)}`
     const header = "Hola, quiero solicitar estos productos de Globival & Detalles:\n\n"
     const message = `${header}${lines.join("\n")}${totalLine}`
-    return `https://wa.me/51967411110?text=${encodeURIComponent(message)}`
+    return `https://wa.me/51940226938?text=${encodeURIComponent(message)}`
   }
 
   return (

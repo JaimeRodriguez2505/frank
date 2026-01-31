@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600">
+  <defs>
+    <linearGradient id="flame" x1="0" x2="1">
+      <stop offset="0" stop-color="#B11A1A"/>
+      <stop offset="0.5" stop-color="#E04A3A"/>
+      <stop offset="1" stop-color="#F06D5B"/>
+    </linearGradient>
+    <linearGradient id="smoke" x1="0" x2="1">
+      <stop offset="0" stop-color="#2A2D33" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#2A2D33" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="600" fill="#ffffff"/>
+  <g opacity="0.9">
+    <path d="M-50 420 C 250 300, 420 340, 740 220 C 980 130, 1180 150, 1320 80" fill="none" stroke="url(#flame)" stroke-width="80" stroke-linecap="round"/>
+    <path d="M-80 520 C 180 420, 380 460, 720 340 C 980 260, 1160 260, 1320 210" fill="none" stroke="url(#flame)" stroke-width="60" stroke-linecap="round"/>
+    <path d="M-30 340 C 210 240, 420 260, 680 140 C 980 10, 1180 70, 1300 40" fill="none" stroke="#B11A1A" stroke-opacity="0.35" stroke-width="22" stroke-linecap="round"/>
+  </g>
+  <g opacity="0.6">
+    <path d="M-80 260 C 200 160, 460 200, 780 100 C 980 40, 1180 60, 1320 10" fill="none" stroke="url(#smoke)" stroke-width="70" stroke-linecap="round"/>
+  </g>
+  <g opacity="0.5">
+    <path d="M180 480 C 280 430, 380 440, 520 380 C 640 330, 720 330, 820 300" fill="none" stroke="#1F2328" stroke-opacity="0.3" stroke-width="14" stroke-linecap="round"/>
+    <path d="M380 520 C 460 480, 540 500, 660 440 C 780 390, 860 400, 960 370" fill="none" stroke="#1F2328" stroke-opacity="0.2" stroke-width="10" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -218,7 +218,40 @@ export const importRequestService = {
   },
   updateStatus: (id: number, estado: string) =>
     api.put(`/import-requests/${id}/estado`, { estado }),
+  updateTracking: (
+    id: number,
+    payload: {
+      codigo_cliente?: string | null
+      progreso?: number
+      etapa_logistica?: string | null
+      ciudad_destino?: string | null
+      eta_fecha?: string | null
+      comentario_cliente?: string | null
+      comentario_interno?: string | null
+    },
+  ) => api.put(`/import-requests/${id}/tracking`, payload),
+  addEvent: (
+    id: number,
+    payload: {
+      estado?: string
+      progreso?: number
+      etapa_logistica?: string | null
+      nota?: string | null
+      ocurrido_en?: string | null
+      visible_cliente?: boolean
+    },
+  ) => api.post(`/import-requests/${id}/events`, payload),
   delete: (id: number) => api.delete(`/import-requests/${id}`),
+}
+
+// Brand logos
+export const brandLogoService = {
+  getAll: (activeOnly: boolean = true) =>
+    api.get(`/brand-logos${activeOnly ? "?active_only=1" : ""}`),
+  create: async (data: FormData) => api.post("/brand-logos", data),
+  update: async (id: number, data: FormData) => api.post(`/brand-logos/${id}/update`, data),
+  toggleActive: (id: number) => api.put(`/brand-logos/${id}/toggle-active`),
+  delete: (id: number) => api.delete(`/brand-logos/${id}`),
 }
 
 // Servicios para categoría destacada
@@ -226,6 +259,12 @@ export const featuredCategoryService = {
   get: () => api.get("/featured-category"),
   update: (categoryId: number | null) =>
     api.put("/featured-category", { category_id: categoryId }),
+}
+
+// Portal cliente (admin)
+export const clientPortalAdminService = {
+  upsertPin: (codigo_cliente: string, pin: string) =>
+    api.post("/client-portal/users", { codigo_cliente, pin }),
 }
 
 export default api

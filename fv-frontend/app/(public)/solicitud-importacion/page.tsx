@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { Formik, Form, Field, ErrorMessage } from "formik"
 import * as Yup from "yup"
 import { motion, AnimatePresence } from "framer-motion"
@@ -291,12 +292,19 @@ const SolicitudImportacion = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-white to-primary dark:from-gray-950 dark:via-gray-900 dark:to-black relative overflow-hidden py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-background via-white to-secondary/70 dark:from-gray-950 dark:via-gray-900 dark:to-black relative overflow-hidden py-16 px-4 sm:px-6 lg:px-8">
       {/* Decorative background */}
       <div className="absolute inset-0 opacity-30 pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full filter blur-3xl"></div>
         <div className="absolute bottom-20 right-10 w-72 h-72 bg-fv-gold/20 rounded-full filter blur-3xl"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/10 rounded-full filter blur-3xl"></div>
+      </div>
+
+      {/* Speed streak accents */}
+      <div className="pointer-events-none absolute inset-x-0 top-10 z-10 overflow-hidden">
+        <div className="speed-streak top-0 left-0"></div>
+        <div className="speed-streak streak-2 top-8 left-16"></div>
+        <div className="speed-streak streak-3 top-16 left-32"></div>
       </div>
 
       <motion.div
@@ -312,6 +320,15 @@ const SolicitudImportacion = () => {
           <p className="text-gray-600 dark:text-gray-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
             ¿Buscas una pieza específica? Completa el formulario y te ayudaremos a importarla.
           </p>
+          <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-3">
+            <span className="text-sm text-gray-500 dark:text-gray-400">¿Ya tienes una solicitud?</span>
+            <Link
+              href="/portal-cliente"
+              className="px-4 py-2 rounded-full bg-white/80 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-700 text-sm font-semibold text-primary hover:shadow-md transition-all"
+            >
+              Ver seguimiento
+            </Link>
+          </div>
         </motion.div>
 
         <motion.div

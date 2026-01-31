@@ -684,7 +684,7 @@ function ProductosAdmin() {
         >
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-rh-teal to-rh-gold bg-clip-text text-transparent mb-2">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-rh-gold bg-clip-text text-transparent mb-2">
                 Gestión de Productos
               </h1>
               <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2">
@@ -697,7 +697,7 @@ function ProductosAdmin() {
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
               onClick={handleAddProduct}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-rh-teal to-rh-gold text-white rounded-xl font-semibold shadow-lg hover:shadow-2xl transition-all"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-rh-gold text-white rounded-xl font-semibold shadow-lg hover:shadow-2xl transition-all"
             >
               <FaPlus />
               Nuevo Producto

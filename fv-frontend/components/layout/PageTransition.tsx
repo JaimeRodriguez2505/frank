@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { usePathname } from "next/navigation"
 import { ReactNode } from "react"
 
@@ -27,17 +27,19 @@ interface PageTransitionProps {
  */
 export const PageTransition = ({ children }: PageTransitionProps) => {
   const pathname = usePathname()
+  const reduceMotion = useReducedMotion()
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode="wait" initial={false}>
       <motion.div
         key={pathname}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
+        className="relative"
+        initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
+        animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+        exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -12 }}
         transition={{
-          duration: 0.3,
-          ease: [0.22, 1, 0.36, 1]
+          duration: reduceMotion ? 0.2 : 0.3,
+          ease: [0.22, 1, 0.36, 1],
         }}
       >
         {children}

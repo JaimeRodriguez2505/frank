@@ -54,6 +54,12 @@ const LibroReclamaciones = () => {
 
       {/* Contenedor principal */}
       <div className="container mx-auto py-8 relative z-10 bg-background/80 min-h-[calc(100vh-160px)] backdrop-blur-xl">
+        {/* Speed streak accents */}
+        <div className="pointer-events-none absolute inset-x-0 top-4 z-10 overflow-hidden">
+          <div className="speed-streak top-0 left-0"></div>
+          <div className="speed-streak streak-2 top-8 left-16"></div>
+          <div className="speed-streak streak-3 top-16 left-32"></div>
+        </div>
         {/* Encabezado */}
         <div className="bg-card p-8 mb-8 rounded-md shadow-lg border border-border relative overflow-hidden text-center backdrop-blur-xl">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent -z-10"></div>

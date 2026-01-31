@@ -85,7 +85,7 @@ export default function AdminLayout({
   return (
     <ProtectedRoute>
       <AdminThemeVars>
-        <div className="flex min-h-screen bg-background text-foreground relative">
+        <div className="flex min-h-screen bg-background text-foreground relative admin-shell">
           <button 
             className="md:hidden fixed top-4 left-4 z-[1001] bg-primary hover:bg-primary/90 rounded-md text-white p-2.5 cursor-pointer shadow-md flex items-center justify-center transition-colors"
             onClick={toggleSidebar}
@@ -129,4 +129,3 @@ export default function AdminLayout({
     </ProtectedRoute>
   )
 }
-

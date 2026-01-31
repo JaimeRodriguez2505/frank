@@ -4,30 +4,30 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Base colors - Nueva paleta FV Auto Importaciones */
-  --background: #F6F1F8; /* Fondo principal lavanda suave */
-  --foreground: #322931; /* Texto principal morado oscuro */
-  --card: #CFC1CA; /* Tarjetas/secciones lavanda */
-  --card-foreground: #322931;
-  --popover: #CFC1CA;
-  --popover-foreground: #322931;
+  /* Base colors - Nueva paleta FV Auto Importaciones (gris perla + rojo) */
+  --background: #F5F6F8; /* Fondo principal */
+  --foreground: #1F2328; /* Texto principal */
+  --card: #FFFFFF; /* Tarjetas/secciones */
+  --card-foreground: #1F2328;
+  --popover: #FFFFFF;
+  --popover-foreground: #1F2328;
 
-  /* Brand colors - Nueva paleta roja */
-  --primary: #A03838; /* Rojo principal (CTA/precios) */
+  /* Brand colors - Rojo principal */
+  --primary: #B11A1A; /* Rojo principal (CTA/precios) */
   --primary-foreground: #FFFFFF; /* Texto blanco sobre rojo */
-  --secondary: #E8E1EA; /* Fondo secundario lavanda claro */
-  --secondary-foreground: #322931;
+  --secondary: #EFF1F4; /* Fondo secundario */
+  --secondary-foreground: #1F2328;
 
   /* UI colors */
-  --muted: #E8E1EA;
-  --muted-foreground: #626570; /* Texto secundario gris */
-  --accent: #CA897B; /* Rojo acento/degradados */
-  --accent-foreground: #322931;
+  --muted: #E6E8EC;
+  --muted-foreground: #6B7078; /* Texto secundario gris */
+  --accent: #E04A3A; /* Rojo acento/degradados */
+  --accent-foreground: #1F2328;
   --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
-  --border: #9898A5; /* Bordes/UI gris */
-  --input: #9898A5;
-  --ring: #A03838; /* Focus ring rojo */
+  --border: #D8DBE0; /* Bordes/UI gris */
+  --input: #D8DBE0;
+  --ring: #B11A1A; /* Focus ring rojo */
 
   /* Chart colors */
   --chart-1: oklch(0.646 0.222 41.116);
@@ -56,29 +56,29 @@
 
 .dark {
   /* Base colors - Modo Noche con paleta nueva */
-  --background: #1a1518; /* Versión oscura del morado */
-  --foreground: #F6F1F8;
-  --card: #2a2328; /* Tarjetas morado oscuro */
-  --card-foreground: #F6F1F8;
-  --popover: #2a2328;
-  --popover-foreground: #F6F1F8;
+  --background: #141316; /* Fondo principal oscuro */
+  --foreground: #F5F6F8;
+  --card: #1E1D22; /* Tarjetas oscuras */
+  --card-foreground: #F5F6F8;
+  --popover: #1E1D22;
+  --popover-foreground: #F5F6F8;
 
   /* Brand colors - Dark mode */
-  --primary: #CA897B; /* Rojo acento en dark */
-  --primary-foreground: #1a1518;
-  --secondary: #2a2328;
-  --secondary-foreground: #F6F1F8;
+  --primary: #E04A3A; /* Rojo acento en dark */
+  --primary-foreground: #141316;
+  --secondary: #232228;
+  --secondary-foreground: #F5F6F8;
 
   /* UI colors - dark mode */
-  --muted: #2a2328;
-  --muted-foreground: #9898A5;
-  --accent: #A03838; /* Rojo principal en dark */
-  --accent-foreground: #F6F1F8;
+  --muted: #232228;
+  --muted-foreground: #9AA0A6;
+  --accent: #B11A1A; /* Rojo principal en dark */
+  --accent-foreground: #F5F6F8;
   --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
-  --border: #626570;
-  --input: #626570;
-  --ring: #CA897B;
+  --border: #3A3942;
+  --input: #3A3942;
+  --ring: #E04A3A;
 
   /* Mejora de contraste para elementos span en modo oscuro */
   & span {
@@ -130,10 +130,14 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   /* FV Auto Importaciones color mappings - Nueva paleta */
-  --color-fv-red: #A03838;
-  --color-fv-red-accent: #CA897B;
-  --color-fv-purple: #322931;
-  --color-fv-lavender: #F6F1F8;
+  --color-fv-red: #B11A1A;
+  --color-fv-red-accent: #E04A3A;
+  --color-fv-purple: #2A2D33;
+  --color-fv-lavender: #F5F6F8;
+  --color-fv-gold: #E04A3A;
+  --color-fv-gold-bright: #F06D5B;
+  --color-fv-black: #131217;
+  --color-fv-gray: #2B2A31;
 }
 
 @layer base {
@@ -141,9 +145,138 @@
     @apply border-border outline-ring/50;
   }
 
-  body {
+body {
     @apply bg-background text-foreground;
     font-family: 'Montserrat', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  /* Admin panel baseline fixes for light mode readability */
+  .admin-shell {
+    color: var(--foreground);
+  }
+  .admin-shell input,
+  .admin-shell textarea,
+  .admin-shell select {
+    color: var(--foreground) !important;
+  }
+  .admin-shell input::placeholder,
+  .admin-shell textarea::placeholder {
+    color: var(--muted-foreground) !important;
+  }
+  .admin-shell select option {
+    color: #1F2328;
+    background-color: #FFFFFF;
+  }
+  .dark .admin-shell select option {
+    color: #F5F6F8;
+    background-color: #1E1D22;
+  }
+
+  /* Global racing/tuning backdrop */
+  .racing-backdrop {
+    position: relative;
+    overflow-x: hidden;
+  }
+  .racing-backdrop > * {
+    position: relative;
+    z-index: 1;
+  }
+  .racing-backdrop::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(120deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.7)),
+      repeating-linear-gradient(115deg, rgba(177, 26, 26, 0.08) 0 3px, rgba(255, 255, 255, 0) 3px 28px),
+      radial-gradient(circle at 85% 10%, rgba(255, 90, 60, 0.15), transparent 35%);
+    opacity: 0.75;
+    background-size: 100% 100%, 220px 220px, 100% 100%;
+  }
+  .racing-backdrop::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(255, 90, 60, 0.16), transparent 38%),
+      radial-gradient(circle at 82% 12%, rgba(177, 26, 26, 0.14), transparent 42%),
+      radial-gradient(circle at 24% 78%, rgba(60, 60, 60, 0.12), transparent 45%),
+      radial-gradient(circle at 88% 72%, rgba(90, 90, 90, 0.1), transparent 45%);
+    opacity: 0.35;
+  }
+
+  .dark .racing-backdrop::before {
+    background-image:
+      linear-gradient(120deg, rgba(20, 19, 22, 0.9), rgba(20, 19, 22, 0.7)),
+      repeating-linear-gradient(115deg, rgba(224, 74, 58, 0.12) 0 3px, rgba(0, 0, 0, 0) 3px 28px),
+      radial-gradient(circle at 85% 10%, rgba(255, 90, 60, 0.16), transparent 35%);
+    opacity: 0.7;
+  }
+  .dark .racing-backdrop::after {
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(255, 90, 60, 0.14), transparent 38%),
+      radial-gradient(circle at 82% 12%, rgba(177, 26, 26, 0.12), transparent 42%),
+      radial-gradient(circle at 24% 78%, rgba(0, 0, 0, 0.6), transparent 45%),
+      radial-gradient(circle at 88% 72%, rgba(40, 40, 40, 0.5), transparent 45%);
+    opacity: 0.3;
+  }
+
+  /* Range slider styles for catalog filters */
+  .range-slider input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    pointer-events: auto;
+  }
+  .range-slider input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    background: #B11A1A;
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+  }
+  .range-slider input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    background: #B11A1A;
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+  }
+
+  /* Header/Footer animated overlays */
+  .animate-drift {
+    animation: drift-skid 6s ease-in-out infinite;
+  }
+
+  .racing-flame {
+    background-image:
+      radial-gradient(circle at 40% 60%, rgba(255, 120, 0, 0.9), transparent 55%),
+      radial-gradient(circle at 60% 40%, rgba(255, 60, 0, 0.8), transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(255, 200, 0, 0.7), transparent 45%);
+    filter: blur(6px);
+    animation: flame-flicker 1.8s ease-in-out infinite;
+    border-radius: 999px;
+  }
+
+
+  @keyframes drift-skid {
+    0% { transform: translateX(0) rotate(0deg); opacity: 0.3; }
+    50% { transform: translateX(-12px) rotate(-3deg); opacity: 0.6; }
+    100% { transform: translateX(0) rotate(0deg); opacity: 0.3; }
+  }
+
+  @keyframes flame-flicker {
+    0% { transform: translateY(0) scale(1); opacity: 0.8; }
+    50% { transform: translateY(-6px) scale(1.08); opacity: 1; }
+    100% { transform: translateY(0) scale(1); opacity: 0.8; }
   }
 
   /* Typography refinement - Estilo Apple/Tesla */
@@ -290,6 +423,155 @@
     min-width: 48px;
   }
 
+  /* Header/Footer racing surfaces */
+  .header-racing-surface::before,
+  .footer-racing-surface::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(120deg, rgba(255, 90, 60, 0.12) 0%, rgba(255, 255, 255, 0) 45%),
+      linear-gradient(300deg, rgba(177, 26, 26, 0.08) 0%, rgba(255, 255, 255, 0) 55%);
+    opacity: 0.5;
+    background-size: 200% 200%, 100% 100%;
+    animation: surface-glow 10s ease-in-out infinite;
+  }
+  .header-racing-surface::after,
+  .footer-racing-surface::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(circle at 85% 0%, rgba(255, 90, 60, 0.22), transparent 35%),
+      radial-gradient(circle at 15% 100%, rgba(177, 26, 26, 0.18), transparent 40%);
+    opacity: 0.6;
+    animation: surface-glow 14s ease-in-out infinite reverse;
+  }
+
+  .dark .header-racing-surface::before,
+  .dark .footer-racing-surface::before {
+    background-image:
+      linear-gradient(120deg, rgba(255, 90, 60, 0.16) 0%, rgba(0, 0, 0, 0) 45%),
+      linear-gradient(300deg, rgba(224, 74, 58, 0.12) 0%, rgba(0, 0, 0, 0) 55%);
+    opacity: 0.55;
+    background-size: 200% 200%, 100% 100%;
+    animation: surface-glow 10s ease-in-out infinite;
+  }
+  .dark .header-racing-surface::after,
+  .dark .footer-racing-surface::after {
+    background-image:
+      radial-gradient(circle at 85% 0%, rgba(255, 90, 60, 0.2), transparent 35%),
+      radial-gradient(circle at 15% 100%, rgba(177, 26, 26, 0.18), transparent 40%);
+    opacity: 0.6;
+    animation: surface-glow 14s ease-in-out infinite reverse;
+  }
+
+  /* Speed streaks (hero accents) */
+  .speed-streak {
+    position: absolute;
+    height: 6px;
+    width: 220px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 90, 60, 0.75), rgba(255, 255, 255, 0));
+    filter: blur(1px);
+    opacity: 0.6;
+    animation: streak-fly 6s linear infinite;
+  }
+  .speed-streak.streak-2 {
+    height: 4px;
+    width: 180px;
+    opacity: 0.5;
+    animation-duration: 8s;
+    animation-delay: 1.2s;
+  }
+  .speed-streak.streak-3 {
+    height: 3px;
+    width: 140px;
+    opacity: 0.4;
+    animation-duration: 10s;
+    animation-delay: 2.4s;
+  }
+
+  @keyframes surface-glow {
+    0% { background-position: 0% 50%, 0 0; }
+    50% { background-position: 100% 50%, 0 0; }
+    100% { background-position: 0% 50%, 0 0; }
+  }
+
+  @keyframes streak-fly {
+    0% { transform: translateX(-20%) translateY(0); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { transform: translateX(120%) translateY(-10%); opacity: 0; }
+  }
+
+  /* Vertical brand carousel */
+  .vertical-marquee {
+    position: relative;
+    overflow: hidden;
+  }
+  .vertical-marquee-track {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    animation: vertical-marquee 12s ease-in-out infinite;
+  }
+  .vertical-marquee-track:hover {
+    animation-play-state: paused;
+  }
+  @keyframes vertical-marquee {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-25%); }
+    100% { transform: translateY(0); }
+  }
+
+  /* Racing/tuning visual accents */
+  .racing-hero-card {
+    position: relative;
+    overflow: hidden;
+    background-image:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.72)),
+      url('/banner.jpeg');
+    background-size: cover;
+    background-position: center right;
+    background-repeat: no-repeat;
+  }
+  .dark .racing-hero-card {
+    background-image:
+      linear-gradient(135deg, rgba(20, 19, 22, 0.92), rgba(20, 19, 22, 0.72)),
+      url('/banner.jpeg');
+  }
+  .racing-hero-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(110deg, rgba(177, 26, 26, 0.18), rgba(0, 0, 0, 0)),
+      radial-gradient(circle at 15% 25%, rgba(224, 74, 58, 0.28), transparent 55%);
+    pointer-events: none;
+  }
+  .racing-hero-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(120deg, rgba(177, 26, 26, 0.25), rgba(0, 0, 0, 0));
+    opacity: 0.25;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
+  .racing-particles {
+    background-image:
+      radial-gradient(circle at 15% 30%, rgba(177, 26, 26, 0.35) 0.8px, transparent 2px),
+      radial-gradient(circle at 65% 20%, rgba(224, 74, 58, 0.35) 1px, transparent 2.2px),
+      radial-gradient(circle at 35% 75%, rgba(177, 26, 26, 0.25) 1px, transparent 2.6px),
+      radial-gradient(circle at 80% 70%, rgba(224, 74, 58, 0.25) 1px, transparent 2.6px);
+    background-size: 180px 160px, 220px 200px, 200px 180px, 240px 210px;
+    background-repeat: repeat;
+  }
+
 /* ============================================ */
 /* ADVANCED UTILITIES */
 /* ============================================ */
@@ -362,4 +644,3 @@
     }
   }
 }
-

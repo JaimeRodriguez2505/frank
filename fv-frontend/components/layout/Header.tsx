@@ -37,7 +37,9 @@ const Header = () => {
   const [adminClickCount, setAdminClickCount] = useState(0)
   const [showAdminNotification, setShowAdminNotification] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [isHidden, setIsHidden] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
+  const lastScrollY = useRef(0)
   const router = useRouter()
   const pathname = usePathname()
   // Note: useSearchParams removed - not needed for header functionality
@@ -50,6 +52,27 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  // Ocultar header al bajar y mostrar al subir
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY
+      const delta = currentY - lastScrollY.current
+      const shouldHide = currentY > 140 && delta > 8
+      const shouldShow = delta < -6 || currentY < 40
+
+      if (shouldHide && !isHidden) {
+        setIsHidden(true)
+      } else if (shouldShow && isHidden) {
+        setIsHidden(false)
+      }
+
+      lastScrollY.current = currentY
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [isHidden])
 
   // Cerrar menú móvil al cambiar de ubicación
   useEffect(() => {
@@ -157,7 +180,7 @@ const Header = () => {
     { name: "Acerca de", to: "/acerca-de" },
     { name: "Catálogo", to: "/catalogo" },
     { name: "Servicios", to: "/servicios" },
-    { name: "Importa con nosotros", to: "/solicitud-importacion" },
+    { name: "Importación y Seguimiento", to: "/solicitud-importacion" },
     { name: "Testimonios", to: "/social" },
     { name: "Contacto", to: "/contacto" },
   ]
@@ -166,26 +189,19 @@ const Header = () => {
     <>
       {/* Main Header */}
       <motion.header
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className={`sticky top-0 z-50 transition-all duration-500 ${
+        initial={{ y: -120 }}
+        animate={{ y: isHidden ? -120 : 0 }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        className={`sticky top-0 z-50 transition-all duration-500 relative header-racing-surface ${
           scrolled
             ? "bg-white/90 dark:bg-fv-black/95 backdrop-blur-2xl shadow-2xl"
             : "bg-white/95 dark:bg-fv-black/98 backdrop-blur-xl shadow-xl"
         }`}
+        style={{ willChange: "transform" }}
       >
-        {/* Racing stripe effect - TOP */}
+        {/* Accent rails */}
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-80"></div>
-
-        {/* Racing stripe effect - BOTTOM */}
-        <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0"></div>
-
-        {/* Decorative racing diagonal lines background */}
-        <div className="absolute inset-0 overflow-hidden opacity-5 dark:opacity-[0.03] pointer-events-none">
-          <div className="absolute -left-20 top-0 bottom-0 w-32 bg-gradient-to-r from-primary to-transparent skew-x-12"></div>
-          <div className="absolute -right-20 top-0 bottom-0 w-32 bg-gradient-to-l from-primary to-transparent -skew-x-12"></div>
-        </div>
+        <div className="absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-primary/0 via-primary/60 to-primary/0"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* NIVEL 1: Logo + Búsqueda + User/Cart - TODO EN UNA LÍNEA */}

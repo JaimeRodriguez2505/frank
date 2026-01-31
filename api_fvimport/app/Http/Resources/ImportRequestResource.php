@@ -28,6 +28,13 @@ class ImportRequestResource extends JsonResource
             'nivel_urgencia' => $this->nivel_urgencia,
             'imagenes' => $this->imagenes,
             'estado' => $this->estado,
+            'codigo_cliente' => $this->codigo_cliente,
+            'progreso' => $this->progreso,
+            'etapa_logistica' => $this->etapa_logistica,
+            'ciudad_destino' => $this->ciudad_destino,
+            'eta_fecha' => $this->eta_fecha?->toDateString(),
+            'comentario_cliente' => $this->comentario_cliente,
+            'comentario_interno' => $this->comentario_interno,
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];

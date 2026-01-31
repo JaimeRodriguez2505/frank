@@ -227,12 +227,19 @@ const Contacto = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-white to-primary dark:from-gray-950 dark:via-gray-900 dark:to-black relative overflow-hidden py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-background via-white to-secondary/70 dark:from-gray-950 dark:via-gray-900 dark:to-black relative overflow-hidden py-16 px-4 sm:px-6 lg:px-8">
       {/* Decorative background elements */}
       <div className="absolute inset-0 opacity-30 pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full filter blur-3xl"></div>
         <div className="absolute bottom-20 right-10 w-72 h-72 bg-fv-gold/20 rounded-full filter blur-3xl"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/10 rounded-full filter blur-3xl"></div>
+      </div>
+
+      {/* Speed streak accents */}
+      <div className="pointer-events-none absolute inset-x-0 top-10 z-10 overflow-hidden">
+        <div className="speed-streak top-0 left-0"></div>
+        <div className="speed-streak streak-2 top-8 left-16"></div>
+        <div className="speed-streak streak-3 top-16 left-32"></div>
       </div>
 
       <motion.div
@@ -289,10 +296,10 @@ const Contacto = () => {
                 <div className="ml-5">
                   <p className="text-sm font-bold text-gray-900 dark:text-white mb-1">Teléfono</p>
                   <a
-                    href="tel:+51967411110"
+                    href="tel:+51940226938"
                     className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-fv-gold transition-colors"
                   >
-                    +51 967 411 110
+                    +51 940 226 938
                   </a>
                 </div>
               </motion.div>

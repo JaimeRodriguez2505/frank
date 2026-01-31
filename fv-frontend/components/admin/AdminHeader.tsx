@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { FaSignOutAlt, FaBell, FaUser, FaBars, FaEnvelope, FaExclamationCircle } from "react-icons/fa"
+import { FaSignOutAlt, FaBell, FaUser, FaBars, FaEnvelope, FaExclamationCircle, FaFileImport } from "react-icons/fa"
 import { useState } from "react"
 import ThemeToggle from "../ThemeToggle"
 import { useNotifications } from "@/hooks/useNotifications"
@@ -46,6 +46,8 @@ const AdminHeader = ({ onMenuClick, sidebarWidth = '0' }: AdminHeaderProps) => {
       router.push('/admin/reclamaciones')
     } else if (notification.type === 'contact') {
       router.push('/admin/contactos')
+    } else if (notification.type === 'import_request') {
+      router.push('/admin/solicitudes')
     }
 
     setShowNotifications(false)
@@ -161,6 +163,10 @@ const AdminHeader = ({ onMenuClick, sidebarWidth = '0' }: AdminHeaderProps) => {
                                 {notification.type === 'claim' ? (
                                   <div className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
                                     <FaExclamationCircle className="text-red-600 dark:text-red-400 text-sm" />
+                                  </div>
+                                ) : notification.type === 'import_request' ? (
+                                  <div className="w-8 h-8 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                                    <FaFileImport className="text-primary dark:text-primary text-sm" />
                                   </div>
                                 ) : (
                                   <div className="w-8 h-8 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center">

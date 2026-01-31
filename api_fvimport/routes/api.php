@@ -11,6 +11,10 @@ use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\TestimonialController;
 use App\Http\Controllers\Api\FeaturedCategoryController;
 use App\Http\Controllers\Api\ImportRequestController;
+use App\Http\Controllers\Api\ClientPortalAuthController;
+use App\Http\Controllers\Api\ClientPortalController;
+use App\Http\Controllers\Api\ClientPortalUserController;
+use App\Http\Controllers\Api\BrandLogoController;
 
 // Perfil del usuario autenticado (Sanctum)
 Route::get('/user', function (Request $request) {
@@ -69,7 +73,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/import-requests', [ImportRequestController::class, 'index']);
     Route::get('/import-requests/{importRequest}', [ImportRequestController::class, 'show']);
     Route::put('/import-requests/{importRequest}/estado', [ImportRequestController::class, 'updateStatus']);
+    Route::put('/import-requests/{importRequest}/tracking', [ImportRequestController::class, 'updateTracking']);
+    Route::post('/import-requests/{importRequest}/events', [ImportRequestController::class, 'addEvent']);
     Route::delete('/import-requests/{importRequest}', [ImportRequestController::class, 'destroy']);
+});
+
+// Portal de clientes (tracking)
+Route::post('/client-portal/login', [ClientPortalAuthController::class, 'login'])->middleware('throttle:5,1');
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/client-portal/me', [ClientPortalController::class, 'me']);
+    Route::get('/client-portal/requests', [ClientPortalController::class, 'requests']);
+    Route::post('/client-portal/users', [ClientPortalUserController::class, 'upsert']);
 });
 
 // Banners
@@ -91,6 +105,15 @@ Route::put('/testimonials/{testimonial}/toggle-active', [TestimonialController::
 Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/banners/{banner}', [BannerController::class, 'destroy']);
     Route::delete('/testimonials/{testimonial}', [TestimonialController::class, 'destroy']);
+});
+
+// Brand logos
+Route::get('/brand-logos', [BrandLogoController::class, 'index']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/brand-logos', [BrandLogoController::class, 'store']);
+    Route::post('/brand-logos/{brandLogo}/update', [BrandLogoController::class, 'update']);
+    Route::put('/brand-logos/{brandLogo}/toggle-active', [BrandLogoController::class, 'toggleActive']);
+    Route::delete('/brand-logos/{brandLogo}', [BrandLogoController::class, 'destroy']);
 });
 
 // Configuración de categoría destacada

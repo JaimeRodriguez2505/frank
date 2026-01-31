@@ -57,6 +57,13 @@ const AcercaDe = () => {
       {/* Subtle grid pattern overlay */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] opacity-30 dark:opacity-20"></div>
 
+      {/* Speed streak accents */}
+      <div className="pointer-events-none absolute inset-x-0 top-10 z-10 overflow-hidden">
+        <div className="speed-streak top-0 left-0"></div>
+        <div className="speed-streak streak-2 top-8 left-16"></div>
+        <div className="speed-streak streak-3 top-16 left-32"></div>
+      </div>
+
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
         {/* Hero Header - Modern 2025 style */}
         <motion.div
@@ -354,7 +361,7 @@ const AcercaDe = () => {
             </motion.div>
 
             <motion.a
-              href={`https://wa.me/51967411110?text=${encodeURIComponent('Hola, me gustaría consultar sobre piezas y accesorios automotrices.')}`}
+              href={`https://wa.me/51940226938?text=${encodeURIComponent('Hola, me gustaría consultar sobre piezas y accesorios automotrices.')}`}
               target="_blank"
               rel="noopener noreferrer"
               initial={{ opacity: 0, y: 30 }}
@@ -369,7 +376,7 @@ const AcercaDe = () => {
                 <FaWhatsapp className="text-white text-2xl" />
               </div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-green-600 transition-colors">WhatsApp</h3>
-              <p className="text-gray-600 dark:text-gray-300 font-light">967 411 110</p>
+              <p className="text-gray-600 dark:text-gray-300 font-light">940 226 938</p>
             </motion.a>
 
             <motion.a

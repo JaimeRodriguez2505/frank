@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
-import { claimService, contactService } from '../services/api'
+import { claimService, contactService, importRequestService } from '../services/api'
 
 interface Notification {
   id: string
-  type: 'claim' | 'contact'
+  type: 'claim' | 'contact' | 'import_request'
   title: string
   time: string
   unread: boolean
@@ -32,6 +32,14 @@ interface Contact {
   updated_at: string
 }
 
+interface ImportRequest {
+  id: number
+  nombre_pieza: string
+  email: string
+  estado: string
+  created_at: string
+}
+
 const formatTimeAgo = (dateString: string): string => {
   const date = new Date(dateString)
   const now = new Date()
@@ -58,13 +66,16 @@ export const useNotifications = () => {
       setLoading(true)
       setError(null)
 
-      const [claimsResponse, contactsResponse] = await Promise.all([
+      const [claimsResponse, contactsResponse, importRequestsResponse] = await Promise.all([
         claimService.getAll().catch(() => ({ data: { data: [] } })),
-        contactService.getAll().catch(() => ({ data: { data: [] } }))
+        contactService.getAll().catch(() => ({ data: { data: [] } })),
+        importRequestService.getAll().catch(() => ({ data: { data: [] } }))
       ])
 
       const claimsData: Claim[] = claimsResponse.data.data || claimsResponse.data || []
       const contactsData: Contact[] = contactsResponse.data.data || contactsResponse.data || []
+      const importRequestsData: ImportRequest[] =
+        importRequestsResponse.data.data || importRequestsResponse.data || []
 
       // Convertir claims a notificaciones
       const claimNotifications: Notification[] = claimsData.map((claim) => ({
@@ -86,8 +97,17 @@ export const useNotifications = () => {
         createdAt: new Date(contact.created_at)
       }))
 
+      const importRequestNotifications: Notification[] = importRequestsData.map((request) => ({
+        id: `import-request-${request.id}`,
+        type: 'import_request' as const,
+        title: `Nueva solicitud: ${request.nombre_pieza}`,
+        time: formatTimeAgo(request.created_at),
+        unread: true,
+        createdAt: new Date(request.created_at)
+      }))
+
       // Combinar y ordenar por fecha (más reciente primero)
-      const allNotifications = [...claimNotifications, ...contactNotifications]
+      const allNotifications = [...claimNotifications, ...contactNotifications, ...importRequestNotifications]
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .slice(0, 10) // Limitar a las 10 más recientes
 

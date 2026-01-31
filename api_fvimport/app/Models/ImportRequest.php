@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ImportRequestEvent;
 
 /**
  * @property int $id
@@ -39,6 +40,13 @@ class ImportRequest extends Model
         'nivel_urgencia',
         'imagenes',
         'estado',
+        'codigo_cliente',
+        'progreso',
+        'etapa_logistica',
+        'ciudad_destino',
+        'eta_fecha',
+        'comentario_cliente',
+        'comentario_interno',
         'adelanto_requerido',
         'estado_pago',
         'qr_pago',
@@ -51,6 +59,8 @@ class ImportRequest extends Model
         'imagenes' => 'array',
         'adelanto_requerido' => 'decimal:2',
         'tiempo_estimado_dias' => 'integer',
+        'progreso' => 'integer',
+        'eta_fecha' => 'date',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -58,5 +68,11 @@ class ImportRequest extends Model
     protected $attributes = [
         'estado' => 'pendiente',
         'estado_pago' => 'pendiente',
+        'progreso' => 0,
     ];
+
+    public function events()
+    {
+        return $this->hasMany(ImportRequestEvent::class)->orderBy('ocurrido_en', 'asc');
+    }
 }

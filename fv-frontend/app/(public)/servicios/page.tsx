@@ -116,6 +116,12 @@ const Servicios = () => {
         transition={{ duration: 0.8 }}
         className="relative py-20 md:py-24 px-4 overflow-hidden"
       >
+        {/* Speed streak accents */}
+        <div className="pointer-events-none absolute inset-x-0 top-6 z-10 overflow-hidden">
+          <div className="speed-streak top-0 left-0"></div>
+          <div className="speed-streak streak-2 top-8 left-16"></div>
+          <div className="speed-streak streak-3 top-16 left-32"></div>
+        </div>
 
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <motion.div

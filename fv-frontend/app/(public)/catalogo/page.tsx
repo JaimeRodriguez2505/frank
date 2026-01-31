@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, Suspense } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { motion, AnimatePresence, LayoutGroup } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import {
   FaFilter,
   FaTimes,
@@ -537,6 +537,7 @@ const Catalogo = () => {
 
   // Estados UI
   const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(false)
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [currentPage, setCurrentPage] = useState(1)
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null)
@@ -552,7 +553,12 @@ const Catalogo = () => {
   // Nuevos filtros
   const [selectedBrands, setSelectedBrands] = useState<string[]>([])
   const [selectedCondiciones, setSelectedCondiciones] = useState<string[]>([])
+  const [selectedOrigins, setSelectedOrigins] = useState<string[]>([])
+  const [selectedDisponibilidades, setSelectedDisponibilidades] = useState<string[]>([])
   const [orderOnly, setOrderOnly] = useState(false)
+  const [weightRange, setWeightRange] = useState<[number, number]>([0, 0])
+  const [brandQuery, setBrandQuery] = useState("")
+  const [originQuery, setOriginQuery] = useState("")
 
   // Secciones expandidas
   const [showCategoryFilter, setShowCategoryFilter] = useState(true)
@@ -560,6 +566,8 @@ const Catalogo = () => {
   const [showPriceFilter, setShowPriceFilter] = useState(true)
   const [showBrandFilter, setShowBrandFilter] = useState(true)
   const [showConditionFilter, setShowConditionFilter] = useState(true)
+  const [showOriginFilter, setShowOriginFilter] = useState(true)
+  const [showWeightFilter, setShowWeightFilter] = useState(true)
 
   // ==================== CARGAR DATOS ====================
 
@@ -595,6 +603,13 @@ const Catalogo = () => {
     }
   }, [searchParams])
 
+  useEffect(() => {
+    const offerParam = searchParams.get("offerOnly")
+    if (offerParam !== null) {
+      setOfferOnly(offerParam === "true" || offerParam === "1")
+    }
+  }, [searchParams])
+
   // Scroll suave hacia arriba cuando cambie la página
   useEffect(() => {
     window.scrollTo({
@@ -602,6 +617,15 @@ const Catalogo = () => {
       behavior: 'smooth'
     })
   }, [currentPage])
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1024)
+    }
+    handleResize()
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   // ==================== CÁLCULOS ====================
 
@@ -620,12 +644,31 @@ const Catalogo = () => {
     return Array.from(new Set(brands)).sort()
   }, [products])
 
+  const uniqueOrigins = useMemo(() => {
+    const origins = products
+      .map(p => p.origen)
+      .filter((origen): origen is string => !!origen)
+    return Array.from(new Set(origins)).sort()
+  }, [products])
+
+  const [computedMinWeight, computedMaxWeight] = useMemo(() => {
+    const weights = products.map(p => p.peso).filter((peso): peso is number => typeof peso === "number")
+    if (weights.length === 0) return [0, 0]
+    return [Math.floor(Math.min(...weights)), Math.ceil(Math.max(...weights))]
+  }, [products])
+
   // Inicializar rango de precios
   useEffect(() => {
     if (products.length > 0 && priceRange[0] === 0 && priceRange[1] === 0) {
       setPriceRange([computedMinPrice, computedMaxPrice])
     }
   }, [products, computedMinPrice, computedMaxPrice, priceRange])
+
+  useEffect(() => {
+    if (computedMaxWeight > 0 && weightRange[0] === 0 && weightRange[1] === 0) {
+      setWeightRange([computedMinWeight, computedMaxWeight])
+    }
+  }, [computedMinWeight, computedMaxWeight, weightRange])
 
   // ==================== FILTRADO DE PRODUCTOS ====================
 
@@ -645,7 +688,10 @@ const Catalogo = () => {
       filtered = filtered.filter(
         (product) =>
           product.name.toLowerCase().includes(searchLower) ||
-          product.description?.toLowerCase().includes(searchLower)
+          product.description?.toLowerCase().includes(searchLower) ||
+          product.marca?.toLowerCase().includes(searchLower) ||
+          product.origen?.toLowerCase().includes(searchLower) ||
+          product.compatibilidad?.toLowerCase().includes(searchLower)
       )
     }
 
@@ -677,9 +723,24 @@ const Catalogo = () => {
       filtered = filtered.filter(p => p.condicion && selectedCondiciones.includes(p.condicion))
     }
 
+    if (selectedOrigins.length > 0) {
+      filtered = filtered.filter(p => p.origen && selectedOrigins.includes(p.origen))
+    }
+
+    if (selectedDisponibilidades.length > 0) {
+      filtered = filtered.filter(p => p.disponibilidad && selectedDisponibilidades.includes(p.disponibilidad))
+    }
+
     // Filtrar "solo para pedido"
     if (orderOnly) {
       filtered = filtered.filter(p => p.disponibilidad === 'solo_pedido')
+    }
+
+    if (weightRange[0] > 0 || weightRange[1] > 0) {
+      filtered = filtered.filter(p => {
+        if (typeof p.peso !== "number") return false
+        return p.peso >= weightRange[0] && p.peso <= weightRange[1]
+      })
     }
 
     // Ordenar
@@ -714,7 +775,10 @@ const Catalogo = () => {
     priceRange,
     selectedBrands,
     selectedCondiciones,
-    orderOnly
+    selectedOrigins,
+    selectedDisponibilidades,
+    orderOnly,
+    weightRange
   ])
 
   // ==================== MANEJADORES ====================
@@ -743,6 +807,22 @@ const Catalogo = () => {
     )
   }
 
+  const handleOriginToggle = (origin: string) => {
+    setSelectedOrigins(prev =>
+      prev.includes(origin)
+        ? prev.filter(o => o !== origin)
+        : [...prev, origin]
+    )
+  }
+
+  const handleDisponibilidadToggle = (value: string) => {
+    setSelectedDisponibilidades(prev =>
+      prev.includes(value)
+        ? prev.filter(v => v !== value)
+        : [...prev, value]
+    )
+  }
+
   const clearFilters = () => {
     setSelectedCategories([])
     setSearchTerm("")
@@ -752,7 +832,12 @@ const Catalogo = () => {
     setPriceRange([computedMinPrice, computedMaxPrice])
     setSelectedBrands([])
     setSelectedCondiciones([])
+    setSelectedOrigins([])
+    setSelectedDisponibilidades([])
     setOrderOnly(false)
+    setWeightRange([computedMinWeight, computedMaxWeight])
+    setBrandQuery("")
+    setOriginQuery("")
     setCurrentPage(1)
   }
 
@@ -789,7 +874,7 @@ const Catalogo = () => {
 
   const getWhatsAppLink = (product: Product) => {
     const message = `Hola, quiero información sobre: ${product.name} - Precio: S/ ${product.precio_de_oferta ?? product.price}`
-    return `https://wa.me/51967411110?text=${encodeURIComponent(message)}`
+    return `https://wa.me/51940226938?text=${encodeURIComponent(message)}`
   }
 
   // ==================== HELPERS ====================
@@ -799,7 +884,13 @@ const Catalogo = () => {
     !!searchTerm ||
     offerOnly ||
     inStockOnly ||
-    (priceRange[0] > computedMinPrice || priceRange[1] < computedMaxPrice)
+    (priceRange[0] > computedMinPrice || priceRange[1] < computedMaxPrice) ||
+    selectedBrands.length > 0 ||
+    selectedCondiciones.length > 0 ||
+    selectedOrigins.length > 0 ||
+    selectedDisponibilidades.length > 0 ||
+    orderOnly ||
+    (computedMaxWeight > 0 && (weightRange[0] > computedMinWeight || weightRange[1] < computedMaxWeight))
 
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * productsPerPage,
@@ -813,19 +904,49 @@ const Catalogo = () => {
     (searchTerm ? 1 : 0) +
     (offerOnly ? 1 : 0) +
     (inStockOnly ? 1 : 0) +
-    (priceRange[0] > computedMinPrice || priceRange[1] < computedMaxPrice ? 1 : 0)
+    (priceRange[0] > computedMinPrice || priceRange[1] < computedMaxPrice ? 1 : 0) +
+    selectedBrands.length +
+    selectedCondiciones.length +
+    selectedOrigins.length +
+    selectedDisponibilidades.length +
+    (orderOnly ? 1 : 0) +
+    (computedMaxWeight > 0 && (weightRange[0] > computedMinWeight || weightRange[1] < computedMaxWeight) ? 1 : 0)
+
+  const hasPriceRange = computedMaxPrice > computedMinPrice
+  const priceRangeSpan = Math.max(computedMaxPrice - computedMinPrice, 1)
+  const priceMinPercent = hasPriceRange ? ((priceRange[0] - computedMinPrice) / priceRangeSpan) * 100 : 0
+  const priceMaxPercent = hasPriceRange ? ((priceRange[1] - computedMinPrice) / priceRangeSpan) * 100 : 100
+
+  const hasWeightRange = computedMaxWeight > computedMinWeight
+  const weightRangeSpan = Math.max(computedMaxWeight - computedMinWeight, 1)
+  const weightMinPercent = hasWeightRange ? ((weightRange[0] - computedMinWeight) / weightRangeSpan) * 100 : 0
+  const weightMaxPercent = hasWeightRange ? ((weightRange[1] - computedMinWeight) / weightRangeSpan) * 100 : 100
+
+  const filteredBrands = uniqueBrands.filter((brand) =>
+    brand.toLowerCase().includes(brandQuery.toLowerCase())
+  )
+
+  const filteredOrigins = uniqueOrigins.filter((origin) =>
+    origin.toLowerCase().includes(originQuery.toLowerCase())
+  )
 
   // ==================== RENDER ====================
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-black">
+    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(1200px_circle_at_10%_-20%,rgba(177,26,26,0.16),transparent_55%),radial-gradient(900px_circle_at_90%_-10%,rgba(240,109,91,0.18),transparent_55%),linear-gradient(135deg,rgba(248,249,251,0.9),rgba(255,255,255,0.7),rgba(245,246,248,0.9))] dark:bg-[radial-gradient(900px_circle_at_12%_-20%,rgba(224,74,58,0.25),transparent_60%),radial-gradient(800px_circle_at_88%_-10%,rgba(177,26,26,0.25),transparent_55%),linear-gradient(135deg,rgba(12,12,14,0.96),rgba(18,18,22,0.92),rgba(10,10,12,0.98))]">
       {/* Background decorations */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-primary/10 to-primary/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-primary/10 to-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }}></div>
+        <div className="absolute -top-24 right-0 w-[640px] h-[640px] bg-gradient-to-br from-primary/20 via-fv-gold/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-32 left-0 w-[520px] h-[520px] bg-gradient-to-tr from-primary/15 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }}></div>
       </div>
 
       <div className="container mx-auto px-4 py-6 md:py-8">
+        {/* Speed streak accents */}
+        <div className="pointer-events-none absolute inset-x-0 top-10 z-10 overflow-hidden">
+          <div className="speed-streak top-0 left-0"></div>
+          <div className="speed-streak streak-2 top-8 left-16"></div>
+          <div className="speed-streak streak-3 top-16 left-32"></div>
+        </div>
         {/* Breadcrumbs */}
         <motion.nav
           initial={{ opacity: 0, y: -10 }}
@@ -846,15 +967,25 @@ const Catalogo = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-2xl rounded-3xl p-6 md:p-8 shadow-xl border border-gray-200/50 dark:border-gray-800/50">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="racing-hero-card relative overflow-hidden bg-white/95 dark:bg-gray-950/80 backdrop-blur-2xl rounded-[32px] p-6 md:p-8 shadow-[0_30px_80px_rgba(15,15,15,0.12)] border border-gray-200/60 dark:border-gray-800/60">
+            <div
+              className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none"
+              aria-hidden="true"
+            >
+              <div
+                className="absolute inset-0 bg-center bg-no-repeat bg-cover opacity-25 dark:opacity-30"
+                style={{ backgroundImage: "url('/catalogo.png')" }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-white/80 via-white/40 to-transparent dark:from-gray-900/85 dark:via-gray-950/55" />
+            </div>
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="p-3 bg-gradient-to-br from-primary/20 to-primary/20 rounded-2xl">
+                  <div className="p-3 bg-gradient-to-br from-primary/20 to-fv-gold/20 rounded-2xl ring-1 ring-primary/20">
                     <FaLayerGroup className="text-3xl text-primary dark:text-primary" />
                   </div>
                   <div>
-                    <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary via-primary to-fv-gold dark:from-primary dark:via-primary dark:to-fv-gold bg-clip-text text-transparent">
+                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary via-primary to-fv-gold dark:from-primary dark:via-primary dark:to-fv-gold bg-clip-text text-transparent">
                       Catálogo de Productos
                     </h1>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
@@ -871,7 +1002,7 @@ const Catalogo = () => {
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all ${
                     offerOnly
                       ? "bg-gradient-to-r from-primary to-fv-gold text-white shadow-lg scale-105"
-                      : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-primary"
+                      : "bg-white/90 dark:bg-gray-900 text-gray-700 dark:text-gray-300 border border-gray-200/80 dark:border-gray-700/80 hover:border-primary"
                   }`}
                 >
                   <FaTag className="text-sm" />
@@ -882,7 +1013,7 @@ const Catalogo = () => {
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all ${
                     inStockOnly
                       ? "bg-gradient-to-r from-primary to-fv-gold text-white shadow-lg scale-105"
-                      : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-primary"
+                      : "bg-white/90 dark:bg-gray-900 text-gray-700 dark:text-gray-300 border border-gray-200/80 dark:border-gray-700/80 hover:border-primary"
                   }`}
                 >
                   <FaCheckCircle className="text-sm" />
@@ -909,18 +1040,18 @@ const Catalogo = () => {
 
           {/* Sidebar de filtros mejorado */}
           <AnimatePresence>
-            {(isFilterOpen || window.innerWidth >= 1024) && (
+            {(isFilterOpen || isDesktop) && (
               <motion.aside
                 variants={filterPanelVariants}
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="fixed lg:sticky top-0 left-0 h-screen lg:h-fit w-[280px] bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-gray-200/50 dark:border-gray-800/50 z-50 lg:z-auto overflow-hidden flex flex-col"
+                className="fixed lg:sticky top-0 left-0 h-screen lg:h-fit w-[280px] bg-white/95 dark:bg-gray-950/85 backdrop-blur-2xl rounded-[28px] shadow-[0_25px_60px_rgba(15,15,15,0.18)] border border-gray-200/60 dark:border-gray-800/60 z-50 lg:z-auto overflow-hidden flex flex-col"
               >
                 {/* Header filtros */}
-                <div className="flex items-center justify-between p-6 pb-4 border-b border-gray-200 dark:border-gray-800">
+                <div className="flex items-center justify-between p-6 pb-4 border-b border-gray-200/70 dark:border-gray-800/70">
                   <div className="flex items-center gap-2">
-                    <div className="p-2 bg-primary/10 rounded-lg">
+                    <div className="p-2 bg-primary/10 rounded-lg ring-1 ring-primary/20">
                       <FaFilter className="text-primary" />
                     </div>
                     <div>
@@ -1091,6 +1222,36 @@ const Catalogo = () => {
                               </span>
                             </div>
                           </label>
+
+                          <div className="pt-3 border-t border-gray-200/70 dark:border-gray-800/70">
+                            <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">
+                              Tipo de disponibilidad
+                            </div>
+                            <div className="grid grid-cols-1 gap-2">
+                              {[
+                                { value: "en_stock", label: "En stock" },
+                                { value: "en_oferta", label: "En oferta" },
+                                { value: "solo_pedido", label: "Solo pedido" }
+                              ].map((item) => {
+                                const active = selectedDisponibilidades.includes(item.value)
+                                return (
+                                  <button
+                                    key={item.value}
+                                    type="button"
+                                    onClick={() => handleDisponibilidadToggle(item.value)}
+                                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg border transition-all text-sm ${
+                                      active
+                                        ? "bg-primary/10 border-primary text-primary font-semibold"
+                                        : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-primary/60"
+                                    }`}
+                                  >
+                                    <span>{item.label}</span>
+                                    {active && <FaCheck className="text-xs" />}
+                                  </button>
+                                )
+                              })}
+                            </div>
+                          </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -1119,6 +1280,58 @@ const Catalogo = () => {
                           exit={{ height: 0, opacity: 0 }}
                           className="mt-3 space-y-4 overflow-hidden"
                         >
+                          <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-900/70 p-4">
+                            <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">
+                              <span>S/ {computedMinPrice}</span>
+                              <span>S/ {computedMaxPrice}</span>
+                            </div>
+
+                            <div className="range-slider relative h-8">
+                              <div className="absolute top-1/2 -translate-y-1/2 w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full" />
+                              <div
+                                className="absolute top-1/2 -translate-y-1/2 h-2 bg-gradient-to-r from-primary to-fv-gold rounded-full"
+                                style={{
+                                  left: `${priceMinPercent}%`,
+                                  right: `${100 - priceMaxPercent}%`
+                                }}
+                              />
+                              <input
+                                type="range"
+                                min={computedMinPrice}
+                                max={computedMaxPrice}
+                                value={priceRange[0]}
+                                disabled={!hasPriceRange}
+                                onChange={(e) => {
+                                  const value = Math.min(Number(e.target.value), priceRange[1])
+                                  setPriceRange([value, priceRange[1]])
+                                }}
+                                className="absolute inset-0 w-full h-8 appearance-none bg-transparent"
+                              />
+                              <input
+                                type="range"
+                                min={computedMinPrice}
+                                max={computedMaxPrice}
+                                value={priceRange[1]}
+                                disabled={!hasPriceRange}
+                                onChange={(e) => {
+                                  const value = Math.max(Number(e.target.value), priceRange[0])
+                                  setPriceRange([priceRange[0], value])
+                                }}
+                                className="absolute inset-0 w-full h-8 appearance-none bg-transparent"
+                              />
+                            </div>
+
+                            <div className="mt-3 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                              <span>Min</span>
+                              <span>Max</span>
+                            </div>
+                            {!hasPriceRange && (
+                              <div className="mt-3 text-xs text-gray-500 dark:text-gray-400 text-center">
+                                {computedMaxPrice === 0 ? "Sin precios disponibles aún" : "Rango único disponible"}
+                              </div>
+                            )}
+                          </div>
+
                           <div className="grid grid-cols-2 gap-3">
                             <div>
                               <label className="text-xs text-gray-600 dark:text-gray-400 block mb-2 font-medium">
@@ -1129,8 +1342,9 @@ const Catalogo = () => {
                                 <input
                                   type="number"
                                   value={priceRange[0]}
+                                  disabled={!hasPriceRange}
                                   onChange={(e) =>
-                                    setPriceRange([Number(e.target.value), priceRange[1]])
+                                    setPriceRange([Math.min(Number(e.target.value), priceRange[1]), priceRange[1]])
                                   }
                                   className="w-full pl-8 pr-3 py-2.5 rounded-lg border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                 />
@@ -1145,8 +1359,9 @@ const Catalogo = () => {
                                 <input
                                   type="number"
                                   value={priceRange[1]}
+                                  disabled={!hasPriceRange}
                                   onChange={(e) =>
-                                    setPriceRange([priceRange[0], Number(e.target.value)])
+                                    setPriceRange([priceRange[0], Math.max(Number(e.target.value), priceRange[0])])
                                   }
                                   className="w-full pl-8 pr-3 py-2.5 rounded-lg border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                 />
@@ -1163,6 +1378,111 @@ const Catalogo = () => {
                       )}
                     </AnimatePresence>
                   </div>
+
+                  {/* Peso */}
+                  {computedMaxWeight > 0 && (
+                    <div>
+                      <button
+                        onClick={() => setShowWeightFilter(!showWeightFilter)}
+                        className="w-full flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                      >
+                        <span className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                          <FaBox className="text-primary group-hover:scale-110 transition-transform" />
+                          Peso (kg)
+                        </span>
+                        <FaChevronDown
+                          className={`transition-transform text-gray-400 ${showWeightFilter ? "rotate-180" : ""}`}
+                        />
+                      </button>
+
+                      <AnimatePresence>
+                        {showWeightFilter && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="mt-3 space-y-4 overflow-hidden"
+                          >
+                            <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-900/70 p-4">
+                              <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">
+                                <span>{computedMinWeight} kg</span>
+                                <span>{computedMaxWeight} kg</span>
+                              </div>
+
+                              <div className="range-slider relative h-8">
+                                <div className="absolute top-1/2 -translate-y-1/2 w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full" />
+                                <div
+                                  className="absolute top-1/2 -translate-y-1/2 h-2 bg-gradient-to-r from-primary to-fv-gold rounded-full"
+                                  style={{
+                                    left: `${weightMinPercent}%`,
+                                    right: `${100 - weightMaxPercent}%`
+                                  }}
+                                />
+                                <input
+                                  type="range"
+                                  min={computedMinWeight}
+                                  max={computedMaxWeight}
+                                  value={weightRange[0]}
+                                  onChange={(e) => {
+                                    const value = Math.min(Number(e.target.value), weightRange[1])
+                                    setWeightRange([value, weightRange[1]])
+                                  }}
+                                  className="absolute inset-0 w-full h-8 appearance-none bg-transparent"
+                                />
+                                <input
+                                  type="range"
+                                  min={computedMinWeight}
+                                  max={computedMaxWeight}
+                                  value={weightRange[1]}
+                                  onChange={(e) => {
+                                    const value = Math.max(Number(e.target.value), weightRange[0])
+                                    setWeightRange([weightRange[0], value])
+                                  }}
+                                  className="absolute inset-0 w-full h-8 appearance-none bg-transparent"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="text-xs text-gray-600 dark:text-gray-400 block mb-2 font-medium">
+                                  Mínimo
+                                </label>
+                                <input
+                                  type="number"
+                                  value={weightRange[0]}
+                                  onChange={(e) =>
+                                    setWeightRange([Math.min(Number(e.target.value), weightRange[1]), weightRange[1]])
+                                  }
+                                  className="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-xs text-gray-600 dark:text-gray-400 block mb-2 font-medium">
+                                  Máximo
+                                </label>
+                                <input
+                                  type="number"
+                                  value={weightRange[1]}
+                                  onChange={(e) =>
+                                    setWeightRange([weightRange[0], Math.max(Number(e.target.value), weightRange[0])])
+                                  }
+                                  className="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                                />
+                              </div>
+                            </div>
+
+                            <button
+                              onClick={() => setWeightRange([computedMinWeight, computedMaxWeight])}
+                              className="w-full text-sm text-primary hover:text-fv-gold font-medium hover:underline transition-colors"
+                            >
+                              Restablecer peso
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
 
                   {/* Marca */}
                   {uniqueBrands.length > 0 && (
@@ -1186,9 +1506,20 @@ const Catalogo = () => {
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            className="mt-3 space-y-1 overflow-hidden"
+                            className="mt-3 space-y-3 overflow-hidden"
                           >
-                            {uniqueBrands.map((brand) => {
+                            <div className="relative">
+                              <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs" />
+                              <input
+                                type="text"
+                                value={brandQuery}
+                                onChange={(e) => setBrandQuery(e.target.value)}
+                                placeholder="Buscar marca..."
+                                className="w-full pl-8 pr-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-xs focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                            {filteredBrands.map((brand) => {
                               const isSelected = selectedBrands.includes(brand)
 
                               return (
@@ -1226,6 +1557,97 @@ const Catalogo = () => {
                                 </motion.div>
                               )
                             })}
+                            {filteredBrands.length === 0 && (
+                              <div className="text-xs text-gray-500 dark:text-gray-400 py-2 text-center">
+                                No hay marcas con ese nombre
+                              </div>
+                            )}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
+
+                  {/* Origen */}
+                  {uniqueOrigins.length > 0 && (
+                    <div>
+                      <button
+                        onClick={() => setShowOriginFilter(!showOriginFilter)}
+                        className="w-full flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                      >
+                        <span className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                          <FaHome className="text-primary group-hover:scale-110 transition-transform" />
+                          Origen
+                        </span>
+                        <FaChevronDown
+                          className={`transition-transform text-gray-400 ${showOriginFilter ? "rotate-180" : ""}`}
+                        />
+                      </button>
+
+                      <AnimatePresence>
+                        {showOriginFilter && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="mt-3 space-y-3 overflow-hidden"
+                          >
+                            <div className="relative">
+                              <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs" />
+                              <input
+                                type="text"
+                                value={originQuery}
+                                onChange={(e) => setOriginQuery(e.target.value)}
+                                placeholder="Buscar origen..."
+                                className="w-full pl-8 pr-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-xs focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              {filteredOrigins.map((origin) => {
+                                const isSelected = selectedOrigins.includes(origin)
+
+                                return (
+                                  <motion.div
+                                    key={origin}
+                                    className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group cursor-pointer"
+                                    onClick={() => handleOriginToggle(origin)}
+                                    whileHover={{ x: 4 }}
+                                    transition={{ duration: 0.2 }}
+                                  >
+                                    <div className="relative w-5 h-5 flex-shrink-0">
+                                      <motion.div
+                                        className="absolute inset-0 border-2 rounded"
+                                        animate={{
+                                          borderColor: isSelected ? "var(--primary)" : "rgb(209, 213, 219)"
+                                        }}
+                                        transition={{ duration: 0.2 }}
+                                      />
+                                      <motion.div
+                                        className="absolute inset-0 bg-primary rounded flex items-center justify-center"
+                                        variants={checkboxVariants}
+                                        initial="unchecked"
+                                        animate={isSelected ? "checked" : "unchecked"}
+                                      >
+                                        <FaCheck className="text-white text-xs" />
+                                      </motion.div>
+                                    </div>
+                                    <div
+                                      className={`flex-1 text-sm ${
+                                        isSelected ? "text-primary font-semibold" : "text-gray-700 dark:text-gray-300"
+                                      }`}
+                                    >
+                                      {origin}
+                                    </div>
+                                  </motion.div>
+                                )
+                              })}
+                              {filteredOrigins.length === 0 && (
+                                <div className="text-xs text-gray-500 dark:text-gray-400 py-2 text-center">
+                                  No hay orígenes con ese nombre
+                                </div>
+                              )}
+                            </div>
                           </motion.div>
                         )}
                       </AnimatePresence>
@@ -1312,7 +1734,7 @@ const Catalogo = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-2xl rounded-3xl p-4 md:p-6 shadow-xl border border-gray-200/50 dark:border-gray-800/50"
+              className="bg-white/95 dark:bg-gray-950/80 backdrop-blur-2xl rounded-[28px] p-4 md:p-6 shadow-[0_20px_50px_rgba(15,15,15,0.12)] border border-gray-200/60 dark:border-gray-800/60"
             >
               <div className="flex flex-col gap-4">
                 {/* Primera fila: Filtros móvil + Búsqueda + Ordenar + Vista */}
@@ -1339,7 +1761,7 @@ const Catalogo = () => {
                       placeholder="Buscar productos..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-11 pr-10 py-2.5 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-gray-400"
+                      className="w-full pl-11 pr-10 py-2.5 rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-gray-400 shadow-sm"
                     />
                     {searchTerm && (
                       <button
@@ -1355,7 +1777,7 @@ const Catalogo = () => {
                   <select
                     value={sortOption}
                     onChange={(e) => setSortOption(e.target.value)}
-                    className="px-4 py-2.5 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-medium text-sm"
+                    className="px-4 py-2.5 rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-medium text-sm shadow-sm"
                   >
                     <option value="default">Más recientes primero</option>
                     <option value="price_asc">Precio: Menor a Mayor</option>
@@ -1365,7 +1787,7 @@ const Catalogo = () => {
                   </select>
 
                   {/* Vista */}
-                  <div className="flex gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl">
+                  <div className="flex gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-2xl">
                     <button
                       onClick={() => setViewMode("grid")}
                       className={`p-2.5 rounded-lg transition-all ${
@@ -1433,6 +1855,80 @@ const Catalogo = () => {
                         Con stock
                       </motion.span>
                     )}
+                    {orderOnly && (
+                      <motion.span
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-full text-xs font-medium"
+                      >
+                        <FaBox className="text-xs" />
+                        Solo pedido
+                      </motion.span>
+                    )}
+                    {(priceRange[0] > computedMinPrice || priceRange[1] < computedMaxPrice) && (
+                      <motion.span
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-medium"
+                      >
+                        <FaDollarSign className="text-xs" />
+                        S/ {priceRange[0]} - {priceRange[1]}
+                      </motion.span>
+                    )}
+                    {(computedMaxWeight > 0 && (weightRange[0] > computedMinWeight || weightRange[1] < computedMaxWeight)) && (
+                      <motion.span
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-medium"
+                      >
+                        <FaBox className="text-xs" />
+                        {weightRange[0]}-{weightRange[1]} kg
+                      </motion.span>
+                    )}
+                    {selectedBrands.map((brand) => (
+                      <motion.span
+                        key={brand}
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-medium"
+                      >
+                        <FaTag className="text-xs" />
+                        {brand}
+                      </motion.span>
+                    ))}
+                    {selectedOrigins.map((origin) => (
+                      <motion.span
+                        key={origin}
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-medium"
+                      >
+                        <FaHome className="text-xs" />
+                        {origin}
+                      </motion.span>
+                    ))}
+                    {selectedCondiciones.map((cond) => (
+                      <motion.span
+                        key={cond}
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-medium"
+                      >
+                        <FaCheckCircle className="text-xs" />
+                        {cond === "nuevo_original" ? "Nuevo Original" : cond === "alternativo" ? "Alternativo" : "Usado"}
+                      </motion.span>
+                    ))}
+                    {selectedDisponibilidades.map((disp) => (
+                      <motion.span
+                        key={disp}
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-medium"
+                      >
+                        <FaCheckCircle className="text-xs" />
+                        {disp === "en_stock" ? "En stock" : disp === "en_oferta" ? "En oferta" : "Solo pedido"}
+                      </motion.span>
+                    ))}
                   </div>
                 )}
 
@@ -1468,7 +1964,7 @@ const Catalogo = () => {
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="text-center py-16 bg-white/90 dark:bg-gray-900/90 backdrop-blur-2xl rounded-3xl p-8 shadow-xl border border-gray-200/50 dark:border-gray-800/50"
+                className="text-center py-16 bg-white/95 dark:bg-gray-950/80 backdrop-blur-2xl rounded-[28px] p-8 shadow-[0_25px_70px_rgba(15,15,15,0.12)] border border-gray-200/60 dark:border-gray-800/60"
               >
                 <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-primary/20 to-primary/20 rounded-3xl flex items-center justify-center">
                   <FaSearch className="text-4xl text-primary" />
@@ -1491,229 +1987,86 @@ const Catalogo = () => {
               </motion.div>
             ) : (
               <>
-                {viewMode === "grid" ? (
-                  <LayoutGroup>
+                <div className="relative">
+                <AnimatePresence mode="wait">
+                  {viewMode === "grid" ? (
                     <motion.div
-                      layout
+                      key="catalog-grid"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.25 }}
                       className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
                     >
-                      <AnimatePresence mode="popLayout">
-                        {paginatedProducts.map((product) => {
-                          const discount = product.precio_de_oferta
-                            ? Math.round(((Number(product.price) - Number(product.precio_de_oferta)) / Number(product.price)) * 100)
-                            : 0
+                      {paginatedProducts.map((product) => {
+                        const discount = product.precio_de_oferta
+                          ? Math.round(((Number(product.price) - Number(product.precio_de_oferta)) / Number(product.price)) * 100)
+                          : 0
 
-                          return (
-                            <motion.div
-                              key={product.id}
-                              layout
-                              layoutId={`catalog-product-${product.id}`}
-                              variants={cardLift}
-                              initial={{ opacity: 0, scale: 0.9 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              exit={{ opacity: 0, scale: 0.9 }}
-                              whileHover="hover"
-                              transition={{
-                                layout: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
-                                opacity: { duration: 0.3 },
-                                scale: { duration: 0.3 }
-                              }}
-                              className="group bg-white/90 dark:bg-gray-900/90 backdrop-blur-2xl rounded-2xl overflow-hidden shadow-lg border border-gray-200/50 dark:border-gray-800/50"
-                            >
-                          <div className="relative h-64 bg-gray-100 dark:bg-gray-800 overflow-hidden">
-                            <ProductImageCarousel
-                              images={[
-                                product.imagen || "/LogoFVImport.png",
-                                ...(product.images?.sort((a, b) => a.order - b.order).map(img => img.image_path) || [])
-                              ]}
-                              productName={product.name}
-                              onImageClick={() => setQuickViewProduct(product)}
-                            />
-
-                            {/* Badges */}
-                            <div className="absolute top-3 left-3 flex flex-col gap-2">
-                              {product.precio_de_oferta && (
-                                <div className="bg-gradient-to-r from-red-500 to-fv-gold text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
-                                  -{discount}% OFF
-                                </div>
-                              )}
-                              {product.stock <= 5 && product.stock > 0 && (
-                                <div className="bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                                  ¡Últimas {product.stock}!
-                                </div>
-                              )}
-                              {product.stock === 0 && (
-                                <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                                  Agotado
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Wishlist button */}
-                            <button
-                              className="absolute top-3 right-3 p-3 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm text-gray-700 dark:text-gray-300 rounded-full opacity-0 group-hover:opacity-100 hover:text-red-500 hover:scale-110 transition-all shadow-lg"
-                              title="Agregar a favoritos"
-                            >
-                              <FaHeart className="text-sm" />
-                            </button>
-                          </div>
-
-                          <div className="p-5">
-                            <div className="text-xs text-primary font-medium mb-2 flex items-center gap-1">
-                              <FaLayerGroup className="text-xs" />
-                              {product.category?.name || "Sin categoría"}
-                            </div>
-
-                            <Link href={`/producto/${product.id}`}>
-                              <h3 className="font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 group-hover:text-primary transition-colors leading-snug">
-                                {product.name}
-                              </h3>
-                            </Link>
-
-                            <div className="flex items-baseline gap-2 mb-4">
-                              {product.precio_de_oferta ? (
-                                <>
-                                  <span className="text-2xl font-bold bg-gradient-to-r from-primary to-fv-gold bg-clip-text text-transparent">
-                                    S/ {Number(product.precio_de_oferta).toFixed(2)}
-                                  </span>
-                                  <span className="text-sm text-gray-500 line-through">
-                                    S/ {Number(product.price).toFixed(2)}
-                                  </span>
-                                </>
-                              ) : (
-                                <span className="text-2xl font-bold bg-gradient-to-r from-primary to-fv-gold bg-clip-text text-transparent">
-                                  S/ {Number(product.price).toFixed(2)}
-                                </span>
-                              )}
-                            </div>
-
-                            {/* Stock indicator */}
-                            {product.stock > 0 && (
-                              <div className="flex items-center gap-2 mb-4">
-                                <div className="flex-1 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                  <div
-                                    className={`h-full rounded-full transition-all ${
-                                      product.stock > 10
-                                        ? "bg-green-500"
-                                        : product.stock > 5
-                                        ? "bg-yellow-500"
-                                        : "bg-orange-500"
-                                    }`}
-                                    style={{ width: `${Math.min((product.stock / 20) * 100, 100)}%` }}
-                                  ></div>
-                                </div>
-                                <span className="text-xs text-gray-500">
-                                  {product.stock > 10 ? "Stock alto" : "Stock bajo"}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Botones de acción mejorados */}
-                          <div className="p-4 pt-0 flex gap-2">
-                            <button
-                              onClick={() => addToCart(product)}
-                              disabled={product.stock === 0}
-                              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-primary to-fv-gold text-white rounded-xl font-medium hover:shadow-xl hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all"
-                            >
-                              <FaShoppingCart />
-                              <span className="text-sm">Agregar</span>
-                            </button>
-                            <a
-                              href={getWhatsAppLink(product)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="p-2.5 bg-green-500 text-white rounded-xl hover:bg-green-600 hover:scale-110 transition-all"
-                              title="Consultar por WhatsApp"
-                            >
-                              <FaWhatsapp className="text-xl" />
-                            </a>
-                            <button
-                              onClick={() => setQuickViewProduct(product)}
-                              className="p-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 hover:scale-110 transition-all"
-                              title="Vista rápida"
-                            >
-                              <FaEye className="text-xl" />
-                            </button>
-                          </div>
-                        </motion.div>
-                          )
-                        })}
-                      </AnimatePresence>
-                    </motion.div>
-                  </LayoutGroup>
-                ) : (
-                  <LayoutGroup>
-                    <motion.div layout className="space-y-4">
-                      <AnimatePresence mode="popLayout">
-                        {paginatedProducts.map((product) => {
-                          const discount = product.precio_de_oferta
-                            ? Math.round(((Number(product.price) - Number(product.precio_de_oferta)) / Number(product.price)) * 100)
-                            : 0
-
-                          return (
-                            <motion.div
-                              key={product.id}
-                              layout
-                              layoutId={`catalog-list-product-${product.id}`}
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              exit={{ opacity: 0, x: 20 }}
-                              whileHover={{ scale: 1.01, boxShadow: "0 20px 30px rgba(0,0,0,0.15)" }}
-                              transition={{
-                                layout: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
-                                opacity: { duration: 0.3 },
-                                x: { duration: 0.3 }
-                              }}
-                              className="flex flex-col sm:flex-row gap-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur-2xl rounded-2xl p-4 shadow-lg border border-gray-200/50 dark:border-gray-800/50 group"
-                            >
-                          <div className="flex-shrink-0">
-                            <button
-                              onClick={() => setQuickViewProduct(product)}
-                              className="relative w-full sm:w-40 h-40 bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden cursor-pointer group/image"
-                              title="Click para vista rápida"
-                            >
-                              <img
-                                src={buildImageUrl(product.imagen) || "/LogoFVImport.png"}
-                                alt={product.name}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                loading="lazy"
+                        return (
+                          <motion.div
+                            key={product.id}
+                            variants={cardLift}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            whileHover="hover"
+                            transition={{
+                              opacity: { duration: 0.3 },
+                              scale: { duration: 0.3 }
+                            }}
+                            className="group bg-white/95 dark:bg-gray-950/85 backdrop-blur-2xl rounded-[24px] overflow-hidden shadow-[0_18px_40px_rgba(15,15,15,0.12)] border border-gray-200/60 dark:border-gray-800/60 transition-transform hover:-translate-y-1"
+                          >
+                            <div className="relative h-64 bg-gray-100 dark:bg-gray-800 overflow-hidden">
+                              <ProductImageCarousel
+                                images={[
+                                  product.imagen || "/LogoFVImport.png",
+                                  ...(product.images?.sort((a, b) => a.order - b.order).map(img => img.image_path) || [])
+                                ]}
+                                productName={product.name}
+                                onImageClick={() => setQuickViewProduct(product)}
                               />
-                              {/* Overlay de vista rápida */}
-                              <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-                                <div className="opacity-0 group-hover/image:opacity-100 transition-opacity duration-300 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full p-2.5 shadow-lg">
-                                  <FaExpand className="text-gray-700 dark:text-gray-300 text-base" />
-                                </div>
-                              </div>
-                              {product.precio_de_oferta && (
-                                <div className="absolute top-2 left-2 bg-gradient-to-r from-red-500 to-fv-gold text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
-                                  -{discount}%
-                                </div>
-                              )}
-                              {product.images && product.images.length > 0 && (
-                                <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/60 backdrop-blur-sm text-white text-xs font-semibold rounded-full shadow-lg flex items-center gap-1">
-                                  <FaImage className="text-xs" />
-                                  {product.images.length + 1}
-                                </div>
-                              )}
-                            </button>
-                          </div>
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent opacity-80 pointer-events-none" />
 
-                          <div className="flex-1 flex flex-col">
-                            <div className="flex-1">
-                              <div className="text-xs text-primary font-medium mb-1 flex items-center gap-1">
+                              <div className="absolute top-3 left-3 flex flex-col gap-2">
+                                {product.precio_de_oferta && (
+                                  <div className="bg-gradient-to-r from-red-500 to-fv-gold text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
+                                    -{discount}% OFF
+                                  </div>
+                                )}
+                                {product.stock <= 5 && product.stock > 0 && (
+                                  <div className="bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                                    ¡Últimas {product.stock}!
+                                  </div>
+                                )}
+                                {product.stock === 0 && (
+                                  <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                                    Agotado
+                                  </div>
+                                )}
+                              </div>
+
+                              <button
+                                className="absolute top-3 right-3 p-3 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm text-gray-700 dark:text-gray-300 rounded-full opacity-0 group-hover:opacity-100 hover:text-red-500 hover:scale-110 transition-all shadow-lg"
+                                title="Agregar a favoritos"
+                              >
+                                <FaHeart className="text-sm" />
+                              </button>
+                            </div>
+
+                            <div className="p-5">
+                              <div className="text-xs text-primary font-semibold mb-2 flex items-center gap-1">
                                 <FaLayerGroup className="text-xs" />
                                 {product.category?.name || "Sin categoría"}
                               </div>
+
                               <Link href={`/producto/${product.id}`}>
-                                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2 hover:text-primary transition-colors">
+                                <h3 className="font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 group-hover:text-primary transition-colors leading-snug">
                                   {product.name}
                                 </h3>
                               </Link>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
-                                {product.description || "Sin descripción disponible"}
-                              </p>
-                              <div className="flex items-baseline gap-2 mb-3">
+
+                              <div className="flex items-baseline gap-2 mb-4">
                                 {product.precio_de_oferta ? (
                                   <>
                                     <span className="text-2xl font-bold bg-gradient-to-r from-primary to-fv-gold bg-clip-text text-transparent">
@@ -1722,9 +2075,6 @@ const Catalogo = () => {
                                     <span className="text-sm text-gray-500 line-through">
                                       S/ {Number(product.price).toFixed(2)}
                                     </span>
-                                    <span className="ml-2 px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-bold rounded">
-                                      ¡AHORRA S/ {(Number(product.price) - Number(product.precio_de_oferta)).toFixed(2)}!
-                                    </span>
                                   </>
                                 ) : (
                                   <span className="text-2xl font-bold bg-gradient-to-r from-primary to-fv-gold bg-clip-text text-transparent">
@@ -1732,58 +2082,200 @@ const Catalogo = () => {
                                   </span>
                                 )}
                               </div>
-                              {product.stock > 0 ? (
-                                <div className="flex items-center gap-2 text-sm">
-                                  <FaCheckCircle className="text-green-500" />
-                                  <span className="text-green-600 dark:text-green-400 font-medium">
-                                    En stock ({product.stock} disponibles)
-                                  </span>
-                                </div>
-                              ) : (
-                                <div className="flex items-center gap-2 text-sm">
-                                  <FaTimes className="text-red-500" />
-                                  <span className="text-red-600 dark:text-red-400 font-medium">
-                                    Agotado
+
+                              {product.stock > 0 && (
+                                <div className="flex items-center gap-2 mb-4">
+                                  <div className="flex-1 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                    <div
+                                      className={`h-full rounded-full transition-all ${
+                                        product.stock > 10
+                                          ? "bg-green-500"
+                                          : product.stock > 5
+                                          ? "bg-yellow-500"
+                                          : "bg-orange-500"
+                                      }`}
+                                      style={{ width: `${Math.min((product.stock / 20) * 100, 100)}%` }}
+                                    ></div>
+                                  </div>
+                                  <span className="text-xs text-gray-500">
+                                    {product.stock > 10 ? "Stock alto" : "Stock bajo"}
                                   </span>
                                 </div>
                               )}
                             </div>
 
-                            <div className="flex flex-wrap gap-2 mt-4">
+                            <div className="p-4 pt-0 flex gap-2">
                               <button
                                 onClick={() => addToCart(product)}
                                 disabled={product.stock === 0}
-                                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary to-fv-gold text-white rounded-xl font-medium hover:shadow-xl hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all text-sm"
+                                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-primary to-fv-gold text-white rounded-xl font-medium hover:shadow-xl hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all"
                               >
                                 <FaShoppingCart />
-                                Agregar al carrito
+                                <span className="text-sm">Agregar</span>
                               </button>
                               <a
                                 href={getWhatsAppLink(product)}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-2 px-4 py-2.5 bg-green-500 text-white rounded-xl font-medium hover:bg-green-600 transition-colors text-sm"
+                                className="p-2.5 bg-green-500 text-white rounded-xl hover:bg-green-600 hover:scale-110 transition-all"
+                                title="Consultar por WhatsApp"
                               >
-                                <FaWhatsapp />
-                                WhatsApp
+                                <FaWhatsapp className="text-xl" />
                               </a>
                               <button
                                 onClick={() => setQuickViewProduct(product)}
-                                className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-sm"
+                                className="p-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 hover:scale-110 transition-all"
+                                title="Vista rápida"
                               >
-                                <FaEye />
-                                Vista rápida
+                                <FaEye className="text-xl" />
                               </button>
                             </div>
-                          </div>
-                        </motion.div>
-                          )
-                        })}
-                      </AnimatePresence>
+                          </motion.div>
+                        )
+                      })}
                     </motion.div>
-                  </LayoutGroup>
-                )}
+                  ) : (
+                    <motion.div
+                      key="catalog-list"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.25 }}
+                      className="space-y-4"
+                    >
+                      {paginatedProducts.map((product) => {
+                        const discount = product.precio_de_oferta
+                          ? Math.round(((Number(product.price) - Number(product.precio_de_oferta)) / Number(product.price)) * 100)
+                          : 0
 
+                        return (
+                          <motion.div
+                            key={product.id}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 20 }}
+                            whileHover={{ scale: 1.01, boxShadow: "0 20px 30px rgba(0,0,0,0.15)" }}
+                            transition={{
+                              opacity: { duration: 0.3 },
+                              x: { duration: 0.3 }
+                            }}
+                            className="flex flex-col sm:flex-row gap-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur-2xl rounded-2xl p-4 shadow-lg border border-gray-200/50 dark:border-gray-800/50 group"
+                          >
+                            <div className="flex-shrink-0">
+                              <button
+                                onClick={() => setQuickViewProduct(product)}
+                                className="relative w-full sm:w-40 h-40 bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden cursor-pointer group/image"
+                                title="Click para vista rápida"
+                              >
+                                <img
+                                  src={buildImageUrl(product.imagen) || "/LogoFVImport.png"}
+                                  alt={product.name}
+                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                  loading="lazy"
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                                  <div className="opacity-0 group-hover/image:opacity-100 transition-opacity duration-300 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full p-2.5 shadow-lg">
+                                    <FaExpand className="text-gray-700 dark:text-gray-300 text-base" />
+                                  </div>
+                                </div>
+                                {product.precio_de_oferta && (
+                                  <div className="absolute top-2 left-2 bg-gradient-to-r from-red-500 to-fv-gold text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
+                                    -{discount}%
+                                  </div>
+                                )}
+                                {product.images && product.images.length > 0 && (
+                                  <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/60 backdrop-blur-sm text-white text-xs font-semibold rounded-full shadow-lg flex items-center gap-1">
+                                    <FaImage className="text-xs" />
+                                    {product.images.length + 1}
+                                  </div>
+                                )}
+                              </button>
+                            </div>
+
+                            <div className="flex-1 flex flex-col">
+                              <div className="flex-1">
+                                <div className="text-xs text-primary font-medium mb-1 flex items-center gap-1">
+                                  <FaLayerGroup className="text-xs" />
+                                  {product.category?.name || "Sin categoría"}
+                                </div>
+                                <Link href={`/producto/${product.id}`}>
+                                  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2 hover:text-primary transition-colors">
+                                    {product.name}
+                                  </h3>
+                                </Link>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+                                  {product.description || "Sin descripción disponible"}
+                                </p>
+                                <div className="flex items-baseline gap-2 mb-3">
+                                  {product.precio_de_oferta ? (
+                                    <>
+                                      <span className="text-2xl font-bold bg-gradient-to-r from-primary to-fv-gold bg-clip-text text-transparent">
+                                        S/ {Number(product.precio_de_oferta).toFixed(2)}
+                                      </span>
+                                      <span className="text-sm text-gray-500 line-through">
+                                        S/ {Number(product.price).toFixed(2)}
+                                      </span>
+                                      <span className="ml-2 px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-bold rounded">
+                                        ¡AHORRA S/ {(Number(product.price) - Number(product.precio_de_oferta)).toFixed(2)}!
+                                      </span>
+                                    </>
+                                  ) : (
+                                    <span className="text-2xl font-bold bg-gradient-to-r from-primary to-fv-gold bg-clip-text text-transparent">
+                                      S/ {Number(product.price).toFixed(2)}
+                                    </span>
+                                  )}
+                                </div>
+                                {product.stock > 0 ? (
+                                  <div className="flex items-center gap-2 text-sm">
+                                    <FaCheckCircle className="text-green-500" />
+                                    <span className="text-green-600 dark:text-green-400 font-medium">
+                                      En stock ({product.stock} disponibles)
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center gap-2 text-sm">
+                                    <FaTimes className="text-red-500" />
+                                    <span className="text-red-600 dark:text-red-400 font-medium">
+                                      Agotado
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="flex flex-wrap gap-2 mt-4">
+                                <button
+                                  onClick={() => addToCart(product)}
+                                  disabled={product.stock === 0}
+                                  className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary to-fv-gold text-white rounded-xl font-medium hover:shadow-xl hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all text-sm"
+                                >
+                                  <FaShoppingCart />
+                                  Agregar al carrito
+                                </button>
+                                <a
+                                  href={getWhatsAppLink(product)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-2 px-4 py-2.5 bg-green-500 text-white rounded-xl font-medium hover:bg-green-600 transition-colors text-sm"
+                                >
+                                  <FaWhatsapp />
+                                  WhatsApp
+                                </a>
+                                <button
+                                  onClick={() => setQuickViewProduct(product)}
+                                  className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-sm"
+                                >
+                                  <FaEye />
+                                  Vista rápida
+                                </button>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                </div>
                 {/* Paginación mejorada */}
                 {totalPages > 1 && (
                   <motion.div
@@ -1839,6 +2331,36 @@ const Catalogo = () => {
                     </button>
                   </motion.div>
                 )}
+
+                <div className="mt-10">
+                  <div className="bg-white/95 dark:bg-gray-900/90 backdrop-blur-2xl rounded-2xl border border-gray-200/60 dark:border-gray-800/60 shadow-lg">
+                    <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 md:px-6">
+                      <div className="flex flex-wrap items-center gap-4 md:gap-6 text-sm font-medium text-gray-700 dark:text-gray-200">
+                        <div className="flex items-center gap-2">
+                          <FaCheckCircle className="text-primary" />
+                          <span>Importación directa</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <FaCheckCircle className="text-primary" />
+                          <span>Repuestos deportivos</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <FaCheckCircle className="text-primary" />
+                          <span>Atención por WhatsApp</span>
+                        </div>
+                      </div>
+                      <a
+                        href="https://wa.me/51940226938"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2.5 bg-green-500 text-white rounded-full font-semibold shadow-md hover:bg-green-600 hover:shadow-lg transition-all"
+                      >
+                        <FaWhatsapp className="text-lg" />
+                        Escríbenos por WhatsApp
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </>
             )}
           </div>

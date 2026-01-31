@@ -21,7 +21,7 @@ import {
   FaBox,
   FaTag,
 } from "react-icons/fa"
-import api, { productService } from "@/services/api"
+import api, { productService, brandLogoService } from "@/services/api"
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion"
 import { IMAGE_BASE_URL } from "@/config/constants"
 
@@ -49,12 +49,6 @@ interface Product {
     name: string
   }
 }
-
-const banner1 = "/banner.jpeg"
-const testimonio1 = "/banner.jpeg"
-const testimonio2 = "/banner.jpeg"
-const testimonio3 = "/banner.jpeg"
-const testimonio4 = "/banner.jpeg"
 
 const ProductCardSkeleton = () => (
   <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-800">
@@ -100,7 +94,7 @@ const QuickViewModal = ({ product, onClose, onAddToCart }: QuickViewModalProps) 
 
   const getWhatsAppLink = () => {
     const message = `Hola, quiero información sobre: ${product.name} - Precio: S/ ${product.precio_de_oferta ?? product.price}`
-    return `https://wa.me/51967411110?text=${encodeURIComponent(message)}`
+    return `https://wa.me/51940226938?text=${encodeURIComponent(message)}`
   }
 
   return (
@@ -137,7 +131,7 @@ const QuickViewModal = ({ product, onClose, onAddToCart }: QuickViewModalProps) 
                 />
                 {product.precio_de_oferta && (
                   <div className="absolute top-4 left-4 flex flex-col gap-2">
-                    <div className="bg-gradient-to-r from-red-500 to-fv-gold text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                    <div className="bg-gradient-to-r from-red-500 to-accent text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
                       -{discount}% OFF
                     </div>
                   </div>
@@ -166,7 +160,7 @@ const QuickViewModal = ({ product, onClose, onAddToCart }: QuickViewModalProps) 
                   <div className="flex items-baseline gap-3 mb-2">
                     {product.precio_de_oferta ? (
                       <>
-                        <span className="text-4xl font-bold bg-gradient-to-r from-primary to-fv-gold bg-clip-text text-transparent">
+                        <span className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                           S/ {Number(product.precio_de_oferta).toFixed(2)}
                         </span>
                         <span className="text-xl text-gray-500 line-through">
@@ -174,7 +168,7 @@ const QuickViewModal = ({ product, onClose, onAddToCart }: QuickViewModalProps) 
                         </span>
                       </>
                     ) : (
-                      <span className="text-4xl font-bold bg-gradient-to-r from-primary to-fv-gold bg-clip-text text-transparent">
+                      <span className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                         S/ {Number(product.price).toFixed(2)}
                       </span>
                     )}
@@ -210,7 +204,7 @@ const QuickViewModal = ({ product, onClose, onAddToCart }: QuickViewModalProps) 
                     onClose()
                   }}
                   disabled={product.stock === 0}
-                  className="w-full flex items-center justify-center gap-3 py-4 bg-gradient-to-r from-primary to-fv-gold text-white rounded-xl font-bold text-lg hover:shadow-2xl hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all"
+                  className="w-full flex items-center justify-center gap-3 py-4 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-bold text-lg hover:shadow-2xl hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all"
                 >
                   <FaShoppingCart className="text-xl" />
                   Agregar al carrito
@@ -243,12 +237,21 @@ const QuickViewModal = ({ product, onClose, onAddToCart }: QuickViewModalProps) 
   )
 }
 
+interface BrandLogo {
+  id: number
+  name?: string | null
+  image_path: string
+  sort_order: number
+  active: boolean
+}
+
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [direction, setDirection] = useState(0)
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
+  const [brandLogos, setBrandLogos] = useState<BrandLogo[]>([])
 
   interface Banner {
     image: string
@@ -354,6 +357,20 @@ const Home = () => {
     fetchBanners()
   }, [])
 
+  useEffect(() => {
+    const fetchBrandLogos = async () => {
+      try {
+        const res = await brandLogoService.getAll(true)
+        const data = res?.data?.data || res?.data || []
+        setBrandLogos(data)
+      } catch (error) {
+        console.error("Error fetching brand logos:", error)
+      }
+    }
+
+    fetchBrandLogos()
+  }, [])
+
   const displayBanners = banners.length > 0 ? banners : fallbackBanners
 
   useEffect(() => {
@@ -413,7 +430,12 @@ const Home = () => {
   }
 
   return (
-    <div className="relative w-full bg-gradient-to-b from-background to-background/80">
+    <div className="relative w-full bg-gradient-to-b from-background via-background to-secondary/60">
+      {/* Background glow */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute -top-20 right-0 h-[420px] w-[420px] rounded-full bg-gradient-to-br from-primary/10 to-accent/10 blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 h-[520px] w-[520px] rounded-full bg-gradient-to-tr from-primary/10 to-transparent blur-3xl"></div>
+      </div>
       {/* Hero Section */}
       <section className="relative w-full h-[60vh] sm:h-[70vh] lg:h-[75vh] flex items-center justify-center text-center text-foreground overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
@@ -430,6 +452,38 @@ const Home = () => {
             />
           </AnimatePresence>
           <div className="absolute inset-0 bg-black/40" />
+        </div>
+        {/* Speed streak accents */}
+        <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
+          <div className="speed-streak top-12 left-0"></div>
+          <div className="speed-streak streak-2 top-1/3 left-10"></div>
+          <div className="speed-streak streak-3 bottom-16 left-20"></div>
+        </div>
+
+        {/* Vertical brand logo carousel */}
+        <div className="hidden lg:block absolute right-8 top-1/2 -translate-y-1/2 z-20">
+          <div className="vertical-marquee h-[420px] w-56 rounded-3xl bg-white/85 dark:bg-gray-900/85 backdrop-blur-2xl border border-white/40 dark:border-gray-800/60 shadow-2xl p-4">
+            <div className="vertical-marquee-track">
+              {brandLogos.map((logo) => (
+                <div
+                  key={logo.id}
+                  className="group rounded-2xl border border-gray-200/60 dark:border-gray-700/60 bg-white/90 dark:bg-gray-900/90 px-3 py-3 shadow-md hover:shadow-lg transition-all flex items-center justify-center"
+                >
+                  <img
+                    src={buildImageUrl(logo.image_path)}
+                    alt={logo.name || "logo"}
+                    className="h-10 w-auto object-contain opacity-80 group-hover:opacity-100 transition-opacity"
+                    loading="lazy"
+                  />
+                </div>
+              ))}
+              {brandLogos.length === 0 && (
+                <div className="text-xs text-gray-500 dark:text-gray-400 text-center px-3 py-2">
+                  Carga logos en Admin &rarr; Logos
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Banner Content */}
@@ -538,7 +592,7 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section className="relative py-16 md:py-20 bg-gradient-to-b from-background/80 to-background overflow-x-hidden">
+      <section className="relative py-16 md:py-20 bg-gradient-to-b from-background via-white to-secondary/70 overflow-x-hidden">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -582,7 +636,7 @@ const Home = () => {
       </section>
 
       {/* Products Section */}
-      <section className="py-16 md:py-20 relative bg-white dark:bg-gray-950 overflow-hidden">
+      <section className="py-16 md:py-20 relative bg-gradient-to-b from-white via-background/90 to-secondary/70 dark:bg-gray-950 overflow-hidden">
         <motion.h2
           variants={fadeInUp}
           initial="hidden"
@@ -625,7 +679,7 @@ const Home = () => {
                       opacity: { duration: 0.4, delay: index * 0.1 },
                       scale: { duration: 0.4, delay: index * 0.1 },
                     }}
-                    className="group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-lg border border-gray-200/50 dark:border-gray-800/50 hover:shadow-xl transition-shadow"
+                    className="group bg-white/95 dark:bg-gray-900 rounded-2xl overflow-hidden shadow-lg border border-gray-200/60 dark:border-gray-800/60 hover:shadow-xl transition-shadow"
                   >
                     <div className="relative h-64 bg-gray-100 dark:bg-gray-800 overflow-hidden">
                       <Link href={`/producto/${product.id}`}>
@@ -639,7 +693,7 @@ const Home = () => {
 
                       <div className="absolute top-3 left-3 flex flex-col gap-2">
                         {product.precio_de_oferta && (
-                          <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
+                          <div className="bg-gradient-to-r from-red-500 to-accent text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
                             -{discount}% OFF
                           </div>
                         )}
@@ -715,13 +769,13 @@ const Home = () => {
                       <button
                         onClick={() => addToCart(product)}
                         disabled={product.stock === 0}
-                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-primary to-orange-500 text-white rounded-xl font-medium hover:shadow-lg hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all"
+                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-medium hover:shadow-lg hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all"
                       >
                         <FaShoppingCart className="text-sm" />
                         <span className="text-sm">Agregar</span>
                       </button>
                       <a
-                        href={`https://wa.me/51967411110?text=Hola,%20estoy%20interesado%20en:%20${product.name}`}
+                        href={`https://wa.me/51940226938?text=Hola,%20estoy%20interesado%20en:%20${product.name}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-2.5 bg-green-500 text-white rounded-xl hover:bg-green-600 hover:scale-110 transition-all"
@@ -752,13 +806,46 @@ const Home = () => {
           viewport={{ once: true }}
           className="mt-12 text-center relative z-10"
         >
-          <Link href="/productos">
-            <button className="px-8 py-4 bg-gradient-to-r from-primary to-orange-500 text-white rounded-xl font-bold hover:shadow-xl hover:scale-105 transition-all inline-flex items-center gap-2">
+          <Link href="/catalogo">
+            <button className="px-8 py-4 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-bold hover:shadow-xl hover:scale-105 transition-all inline-flex items-center gap-2">
               Ver todos los productos
               <FaArrowRight className="text-sm" />
             </button>
           </Link>
         </motion.div>
+      </section>
+
+      {/* Benefits Strip */}
+      <section className="py-6 md:py-8">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="bg-white/95 dark:bg-gray-900/90 backdrop-blur-2xl rounded-2xl border border-gray-200/60 dark:border-gray-800/60 shadow-lg">
+            <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 md:px-6">
+              <div className="flex flex-wrap items-center gap-4 md:gap-6 text-sm font-medium text-gray-700 dark:text-gray-200">
+                <div className="flex items-center gap-2">
+                  <FaCheckCircle className="text-primary" />
+                  <span>Importación directa</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FaCheckCircle className="text-primary" />
+                  <span>Repuestos deportivos</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FaCheckCircle className="text-primary" />
+                  <span>Atención por WhatsApp</span>
+                </div>
+              </div>
+              <a
+                href="https://wa.me/51940226938"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-2.5 bg-green-500 text-white rounded-full font-semibold shadow-md hover:bg-green-600 hover:shadow-lg transition-all"
+              >
+                <FaWhatsapp className="text-lg" />
+                Escríbenos por WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Quick View Modal */}

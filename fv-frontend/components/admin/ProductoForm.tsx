@@ -88,6 +88,10 @@ const validationSchema = Yup.object({
   disponibilidad: Yup.string().required("La disponibilidad es requerida").oneOf(['en_stock', 'en_oferta', 'solo_pedido'], "Disponibilidad inválida"),
 })
 
+const labelBase = "block text-sm font-medium text-gray-800 dark:text-gray-200 mb-2"
+const inputBase =
+  "w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all"
+
 const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = false }: ProductoFormProps) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [removeMainImage, setRemoveMainImage] = useState(false) // Nueva: marcar para eliminar imagen principal
@@ -294,7 +298,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label htmlFor="name" className={labelBase}>
           <div className="flex items-center gap-2">
             <FaTag className="text-primary" />
             Nombre del Producto *
@@ -307,11 +311,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           value={formik.values.name}
-          className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border ${
-            formik.touched.name && formik.errors.name
-              ? "border-red-500"
-              : "border-gray-300 dark:border-gray-700"
-          } rounded-xl text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+          className={`${inputBase} ${formik.touched.name && formik.errors.name ? "border-red-500" : ""}`}
           placeholder="Ingrese el nombre del producto"
         />
         {formik.touched.name && formik.errors.name && (
@@ -331,7 +331,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label htmlFor="description" className={labelBase}>
           <div className="flex items-center gap-2">
             <FaAlignLeft className="text-primary" />
             Descripción *
@@ -344,11 +344,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
           onBlur={formik.handleBlur}
           value={formik.values.description}
           rows={4}
-          className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border ${
-            formik.touched.description && formik.errors.description
-              ? "border-red-500"
-              : "border-gray-300 dark:border-gray-700"
-          } rounded-xl text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-vertical`}
+          className={`${inputBase} ${formik.touched.description && formik.errors.description ? "border-red-500" : ""} resize-vertical`}
           placeholder="Ingrese la descripción del producto"
         />
         {formik.touched.description && formik.errors.description && (
@@ -368,7 +364,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label htmlFor="categoryId" className={labelBase}>
           <div className="flex items-center gap-2">
             <FaLayerGroup className="text-primary" />
             Categoría *
@@ -380,11 +376,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           value={formik.values.categoryId}
-          className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border ${
-            formik.touched.categoryId && formik.errors.categoryId
-              ? "border-red-500"
-              : "border-gray-300 dark:border-gray-700"
-          } rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+          className={`${inputBase} ${formik.touched.categoryId && formik.errors.categoryId ? "border-red-500" : ""}`}
         >
           <option value="">Seleccionar categoría</option>
           {categories
@@ -414,7 +406,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <label htmlFor="price" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="price" className={labelBase}>
             <div className="flex items-center gap-2">
               <FaDollarSign className="text-primary" />
               Precio (S/) *
@@ -428,11 +420,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.price}
-            className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border ${
-              formik.touched.price && formik.errors.price
-                ? "border-red-500"
-                : "border-gray-300 dark:border-gray-700"
-            } rounded-xl text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+            className={`${inputBase} ${formik.touched.price && formik.errors.price ? "border-red-500" : ""}`}
             placeholder="0.00"
           />
           {formik.touched.price && formik.errors.price && (
@@ -452,7 +440,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <label htmlFor="precio_de_oferta" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="precio_de_oferta" className={labelBase}>
             <div className="flex items-center gap-2">
               <FaDollarSign className="text-primary" />
               Precio de Oferta (S/)
@@ -466,11 +454,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.precio_de_oferta}
-            className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border ${
-              formik.touched.precio_de_oferta && formik.errors.precio_de_oferta
-                ? "border-red-500"
-                : "border-gray-300 dark:border-gray-700"
-            } rounded-xl text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+            className={`${inputBase} ${formik.touched.precio_de_oferta && formik.errors.precio_de_oferta ? "border-red-500" : ""}`}
             placeholder="0.00"
           />
           {formik.touched.precio_de_oferta && formik.errors.precio_de_oferta && (
@@ -491,7 +475,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
       >
-        <label htmlFor="stock" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label htmlFor="stock" className={labelBase}>
           <div className="flex items-center gap-2">
             <FaBoxOpen className="text-primary" />
             Stock *
@@ -504,11 +488,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           value={formik.values.stock}
-          className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border ${
-            formik.touched.stock && formik.errors.stock
-              ? "border-red-500"
-              : "border-gray-300 dark:border-gray-700"
-          } rounded-xl text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+          className={`${inputBase} ${formik.touched.stock && formik.errors.stock ? "border-red-500" : ""}`}
           placeholder="0"
         />
         {formik.touched.stock && formik.errors.stock && (
@@ -535,7 +515,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
           transition={{ delay: 0.7 }}
           className="mb-6"
         >
-          <label htmlFor="compatibilidad" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="compatibilidad" className={labelBase}>
             Compatibilidad
           </label>
           <textarea
@@ -545,11 +525,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
             onBlur={formik.handleBlur}
             value={formik.values.compatibilidad}
             rows={3}
-            className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border ${
-              formik.touched.compatibilidad && formik.errors.compatibilidad
-                ? "border-red-500"
-                : "border-gray-300 dark:border-gray-700"
-            } rounded-xl text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-vertical`}
+            className={`${inputBase} ${formik.touched.compatibilidad && formik.errors.compatibilidad ? "border-red-500" : ""} resize-vertical`}
             placeholder="Ej: Compatible con Toyota Corolla 2015-2020, Honda Civic 2016-2021"
           />
           {formik.touched.compatibilidad && formik.errors.compatibilidad && (
@@ -571,7 +547,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
           >
-            <label htmlFor="origen" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="origen" className={labelBase}>
               País de Origen
             </label>
             <input
@@ -581,11 +557,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.origen}
-              className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border ${
-                formik.touched.origen && formik.errors.origen
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-700"
-              } rounded-xl text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+              className={`${inputBase} ${formik.touched.origen && formik.errors.origen ? "border-red-500" : ""}`}
               placeholder="Ej: Japón, USA, China"
             />
             {formik.touched.origen && formik.errors.origen && (
@@ -605,7 +577,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9 }}
           >
-            <label htmlFor="marca" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="marca" className={labelBase}>
               Marca
             </label>
             <input
@@ -615,11 +587,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.marca}
-              className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border ${
-                formik.touched.marca && formik.errors.marca
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-700"
-              } rounded-xl text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+              className={`${inputBase} ${formik.touched.marca && formik.errors.marca ? "border-red-500" : ""}`}
               placeholder="Ej: Bosch, NGK, Denso"
             />
             {formik.touched.marca && formik.errors.marca && (
@@ -639,7 +607,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0 }}
           >
-            <label htmlFor="peso" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="peso" className={labelBase}>
               Peso (kg)
             </label>
             <input
@@ -650,11 +618,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.peso}
-              className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border ${
-                formik.touched.peso && formik.errors.peso
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-700"
-              } rounded-xl text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+              className={`${inputBase} ${formik.touched.peso && formik.errors.peso ? "border-red-500" : ""}`}
               placeholder="0.00"
             />
             {formik.touched.peso && formik.errors.peso && (
@@ -677,7 +641,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.1 }}
           >
-            <label htmlFor="condicion" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="condicion" className={labelBase}>
               Condición *
             </label>
             <select
@@ -686,11 +650,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.condicion}
-              className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border ${
-                formik.touched.condicion && formik.errors.condicion
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-700"
-              } rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+              className={`${inputBase} ${formik.touched.condicion && formik.errors.condicion ? "border-red-500" : ""}`}
             >
               <option value="nuevo_original">Nuevo Original</option>
               <option value="alternativo">Alternativo</option>
@@ -713,7 +673,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2 }}
           >
-            <label htmlFor="disponibilidad" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="disponibilidad" className={labelBase}>
               Disponibilidad *
             </label>
             <select
@@ -722,11 +682,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.disponibilidad}
-              className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border ${
-                formik.touched.disponibilidad && formik.errors.disponibilidad
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-700"
-              } rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+              className={`${inputBase} ${formik.touched.disponibilidad && formik.errors.disponibilidad ? "border-red-500" : ""}`}
             >
               <option value="en_stock">En Stock</option>
               <option value="en_oferta">En Oferta</option>
@@ -751,7 +707,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7 }}
       >
-        <label htmlFor="imagen" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label htmlFor="imagen" className={labelBase}>
           <div className="flex items-center gap-2">
             <FaImage className="text-primary" />
             Imagen Principal del Producto
@@ -763,7 +719,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
           type="file"
           accept="image/*"
           onChange={handleImageChange}
-          className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90 file:cursor-pointer transition-all"
+          className={`${inputBase} file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90 file:cursor-pointer`}
         />
         {imagePreview && !removeMainImage && (
           <motion.div
@@ -795,7 +751,7 @@ const ProductoForm = ({ product, categories, onSave, onCancel, isSubmitting = fa
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.75 }}
       >
-        <label htmlFor="additionalImages" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label htmlFor="additionalImages" className={labelBase}>
           <div className="flex items-center gap-2">
             <FaImage className="text-primary" />
             Imágenes Adicionales

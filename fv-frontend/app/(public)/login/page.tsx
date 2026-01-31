@@ -76,7 +76,7 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-[calc(100vh-160px)] bg-gradient-to-br from-primary via-white to-primary dark:from-gray-950 dark:via-gray-900 dark:to-black relative overflow-hidden">
+    <div className="min-h-[calc(100vh-160px)] bg-gradient-to-br from-background via-white to-secondary/70 dark:from-gray-950 dark:via-gray-900 dark:to-black relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 opacity-30 pointer-events-none">
         <motion.div
@@ -99,6 +99,13 @@ const Login = () => {
           transition={{ delay: 2 }}
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/10 rounded-full filter blur-3xl"
         />
+      </div>
+
+      {/* Speed streak accents */}
+      <div className="pointer-events-none absolute inset-x-0 top-8 z-10 overflow-hidden">
+        <div className="speed-streak top-0 left-0"></div>
+        <div className="speed-streak streak-2 top-8 left-16"></div>
+        <div className="speed-streak streak-3 top-16 left-32"></div>
       </div>
 
       {/* Contenedor principal */}

@@ -212,7 +212,7 @@ const ProductModal = ({ productId, onClose }: ProductModalProps) => {
   const generateWhatsAppMessage = () => {
     if (!product) return ""
     const message = `Hola, estoy interesado en el producto "${product.name}" que vi en Globival & Detalles. ¿Podrías darme más información?`
-    return `https://wa.me/51967411110?text=${encodeURIComponent(message)}`
+    return `https://wa.me/51940226938?text=${encodeURIComponent(message)}`
   }
 
   // Cerrar el modal al hacer clic en el overlay

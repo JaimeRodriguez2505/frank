@@ -25,7 +25,7 @@ const Footer = () => {
     {
       name: "WhatsApp",
       icon: FaWhatsapp,
-      url: "https://wa.me/51XXXXXXXXX?text=Hola%2C%20me%20gustar%C3%ADa%20consultar%20sobre%20piezas%20y%20accesorios",
+      url: "https://wa.me/51940226938?text=Hola%2C%20me%20gustar%C3%ADa%20consultar%20sobre%20piezas%20y%20accesorios",
       color: "hover:text-green-500"
     }
   ]
@@ -46,20 +46,47 @@ const Footer = () => {
   ]
 
   const contactInfo = [
-    { icon: MdPhone, text: "+51 XXX XXX XXX", href: "tel:+51XXXXXXXXX", color: "text-primary" },
+    { icon: MdPhone, text: "+51 940 226 938", href: "tel:+51940226938", color: "text-primary" },
     { icon: MdEmail, text: "contacto@fvautoimportaciones.com", href: "mailto:contacto@fvautoimportaciones.com", color: "text-primary" },
     { icon: MdLocationOn, text: "Lima, Perú", href: null, color: "text-primary" }
   ]
 
   return (
-    <footer className="relative bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-black border-t border-gray-200 dark:border-gray-800 mt-auto w-full overflow-hidden">
+    <footer className="relative bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-black border-t border-gray-200 dark:border-gray-800 mt-auto w-full overflow-hidden footer-racing-surface">
       {/* Decorative background elements */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-0 left-0 w-96 h-96 bg-fv-black rounded-full filter blur-3xl"></div>
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-fv-gold rounded-full filter blur-3xl"></div>
       </div>
 
+      {/* Subtle accent strip */}
+      <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-primary/0 via-primary/60 to-primary/0"></div>
+
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute -top-10 right-8 hidden md:block pointer-events-none"
+        >
+          <svg className="w-44 h-44 text-primary/35 animate-drift" viewBox="0 0 220 220" fill="none">
+            <path
+              d="M12 160 C60 120, 110 140, 160 95 C185 70, 205 70, 218 82"
+              stroke="currentColor"
+              strokeWidth="6"
+              strokeLinecap="round"
+              strokeDasharray="10 10"
+            />
+            <path
+              d="M0 190 C52 165, 110 175, 160 130 C188 102, 215 102, 235 114"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeDasharray="6 10"
+            />
+          </svg>
+        </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
           {/* Logo & Description Section */}
           <motion.div
@@ -252,7 +279,7 @@ const Footer = () => {
             &copy; {currentYear} FV Auto Importaciones. Todos los derechos reservados.
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-500">
-            Desarrollado con <span className="text-primary">❤</span> por Tukituki Solutions SAC
+            Desarrollado con <span className="text-primary">❤</span> por Jaime Rodriguez
           </p>
         </motion.div>
       </div>

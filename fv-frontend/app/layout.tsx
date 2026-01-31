@@ -16,8 +16,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" suppressHydrationWarning>
-      <body className={inter.className}>
+    <html lang="es" suppressHydrationWarning data-scroll-behavior="smooth">
+      <body className={`${inter.className} racing-backdrop`}>
         <Providers>
           {children}
         </Providers>
@@ -25,4 +25,3 @@ export default function RootLayout({
     </html>
   );
 }
-
