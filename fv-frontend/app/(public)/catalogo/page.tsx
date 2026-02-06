@@ -25,7 +25,8 @@ import {
   FaExpand,
   FaImage,
   FaCheck,
-  FaBox
+  FaBox,
+  FaCar
 } from "react-icons/fa"
 import { categoryService, productService } from "@/services/api"
 import { IMAGE_BASE_URL } from "@/config/constants"
@@ -72,6 +73,7 @@ interface Product {
     id: number
     name: string
   }
+  SKU?: string
   // Nuevos campos
   compatibilidad?: string
   origen?: string
@@ -399,6 +401,16 @@ const QuickViewModal = ({ product, onClose, onAddToCart, getWhatsAppLink }: Quic
                           </span>
                         </div>
                       )}
+                      {product.SKU && (
+                        <div>
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide block mb-1">
+                            SKU
+                          </span>
+                          <span className="text-sm text-gray-900 dark:text-white font-semibold">
+                            {product.SKU}
+                          </span>
+                        </div>
+                      )}
                       {product.origen && (
                         <div>
                           <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide block mb-1">
@@ -416,6 +428,20 @@ const QuickViewModal = ({ product, onClose, onAddToCart, getWhatsAppLink }: Quic
                           </span>
                           <span className="text-sm text-gray-900 dark:text-white">
                             {product.peso} kg
+                          </span>
+                        </div>
+                      )}
+                      {product.disponibilidad && (
+                        <div>
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide block mb-1">
+                            Disponibilidad
+                          </span>
+                          <span className="text-sm text-gray-900 dark:text-white">
+                            {product.disponibilidad === 'en_stock'
+                              ? 'En stock'
+                              : product.disponibilidad === 'en_oferta'
+                              ? 'En oferta'
+                              : 'Solo pedido'}
                           </span>
                         </div>
                       )}
@@ -559,6 +585,8 @@ const Catalogo = () => {
   const [weightRange, setWeightRange] = useState<[number, number]>([0, 0])
   const [brandQuery, setBrandQuery] = useState("")
   const [originQuery, setOriginQuery] = useState("")
+  const [compatQuery, setCompatQuery] = useState("")
+  const [skuQuery, setSkuQuery] = useState("")
 
   // Secciones expandidas
   const [showCategoryFilter, setShowCategoryFilter] = useState(true)
@@ -568,6 +596,8 @@ const Catalogo = () => {
   const [showConditionFilter, setShowConditionFilter] = useState(true)
   const [showOriginFilter, setShowOriginFilter] = useState(true)
   const [showWeightFilter, setShowWeightFilter] = useState(true)
+  const [showCompatibilityFilter, setShowCompatibilityFilter] = useState(true)
+  const [showSkuFilter, setShowSkuFilter] = useState(true)
 
   // ==================== CARGAR DATOS ====================
 
@@ -691,7 +721,24 @@ const Catalogo = () => {
           product.description?.toLowerCase().includes(searchLower) ||
           product.marca?.toLowerCase().includes(searchLower) ||
           product.origen?.toLowerCase().includes(searchLower) ||
-          product.compatibilidad?.toLowerCase().includes(searchLower)
+          product.compatibilidad?.toLowerCase().includes(searchLower) ||
+          product.SKU?.toLowerCase().includes(searchLower)
+      )
+    }
+
+    // Filtrar por compatibilidad específica
+    if (compatQuery) {
+      const compatLower = compatQuery.toLowerCase()
+      filtered = filtered.filter((product) =>
+        product.compatibilidad?.toLowerCase().includes(compatLower)
+      )
+    }
+
+    // Filtrar por SKU
+    if (skuQuery) {
+      const skuLower = skuQuery.toLowerCase()
+      filtered = filtered.filter((product) =>
+        product.SKU?.toLowerCase().includes(skuLower)
       )
     }
 
@@ -778,7 +825,9 @@ const Catalogo = () => {
     selectedOrigins,
     selectedDisponibilidades,
     orderOnly,
-    weightRange
+    weightRange,
+    compatQuery,
+    skuQuery
   ])
 
   // ==================== MANEJADORES ====================
@@ -838,6 +887,8 @@ const Catalogo = () => {
     setWeightRange([computedMinWeight, computedMaxWeight])
     setBrandQuery("")
     setOriginQuery("")
+    setCompatQuery("")
+    setSkuQuery("")
     setCurrentPage(1)
   }
 
@@ -874,7 +925,7 @@ const Catalogo = () => {
 
   const getWhatsAppLink = (product: Product) => {
     const message = `Hola, quiero información sobre: ${product.name} - Precio: S/ ${product.precio_de_oferta ?? product.price}`
-    return `https://wa.me/51940226938?text=${encodeURIComponent(message)}`
+    return `https://wa.me/5154221478?text=${encodeURIComponent(message)}`
   }
 
   // ==================== HELPERS ====================
@@ -890,7 +941,9 @@ const Catalogo = () => {
     selectedOrigins.length > 0 ||
     selectedDisponibilidades.length > 0 ||
     orderOnly ||
-    (computedMaxWeight > 0 && (weightRange[0] > computedMinWeight || weightRange[1] < computedMaxWeight))
+    (computedMaxWeight > 0 && (weightRange[0] > computedMinWeight || weightRange[1] < computedMaxWeight)) ||
+    !!compatQuery ||
+    !!skuQuery
 
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * productsPerPage,
@@ -910,7 +963,9 @@ const Catalogo = () => {
     selectedOrigins.length +
     selectedDisponibilidades.length +
     (orderOnly ? 1 : 0) +
-    (computedMaxWeight > 0 && (weightRange[0] > computedMinWeight || weightRange[1] < computedMaxWeight) ? 1 : 0)
+    (computedMaxWeight > 0 && (weightRange[0] > computedMinWeight || weightRange[1] < computedMaxWeight) ? 1 : 0) +
+    (compatQuery ? 1 : 0) +
+    (skuQuery ? 1 : 0)
 
   const hasPriceRange = computedMaxPrice > computedMinPrice
   const priceRangeSpan = Math.max(computedMaxPrice - computedMinPrice, 1)
@@ -1654,6 +1709,85 @@ const Catalogo = () => {
                     </div>
                   )}
 
+                  {/* Compatibilidad */}
+                  <div>
+                    <button
+                      onClick={() => setShowCompatibilityFilter(!showCompatibilityFilter)}
+                      className="w-full flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                    >
+                      <span className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                        <FaCar className="text-primary group-hover:scale-110 transition-transform" />
+                        Compatibilidad
+                      </span>
+                      <FaChevronDown
+                        className={`transition-transform text-gray-400 ${showCompatibilityFilter ? "rotate-180" : ""}`}
+                      />
+                    </button>
+
+                    <AnimatePresence>
+                      {showCompatibilityFilter && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="mt-3 space-y-3 overflow-hidden"
+                        >
+                          <div className="relative">
+                            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs" />
+                            <input
+                              type="text"
+                              value={compatQuery}
+                              onChange={(e) => setCompatQuery(e.target.value)}
+                              placeholder="Buscar compatibilidad..."
+                              className="w-full pl-8 pr-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-xs focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                            />
+                          </div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                            Ej: Toyota Corolla 2010, Hilux 2.8, etc.
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* SKU */}
+                  <div>
+                    <button
+                      onClick={() => setShowSkuFilter(!showSkuFilter)}
+                      className="w-full flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                    >
+                      <span className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                        <FaTag className="text-primary group-hover:scale-110 transition-transform" />
+                        SKU
+                      </span>
+                      <FaChevronDown
+                        className={`transition-transform text-gray-400 ${showSkuFilter ? "rotate-180" : ""}`}
+                      />
+                    </button>
+
+                    <AnimatePresence>
+                      {showSkuFilter && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="mt-3 space-y-3 overflow-hidden"
+                        >
+                          <div className="relative">
+                            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs" />
+                            <input
+                              type="text"
+                              value={skuQuery}
+                              onChange={(e) => setSkuQuery(e.target.value)}
+                              placeholder="Buscar SKU..."
+                              className="w-full pl-8 pr-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-xs focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                            />
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
                   {/* Condición */}
                   <div>
                     <button
@@ -1907,6 +2041,26 @@ const Catalogo = () => {
                         {origin}
                       </motion.span>
                     ))}
+                    {compatQuery && (
+                      <motion.span
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-medium"
+                      >
+                        <FaCar className="text-xs" />
+                        Compat: {compatQuery}
+                      </motion.span>
+                    )}
+                    {skuQuery && (
+                      <motion.span
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-medium"
+                      >
+                        <FaTag className="text-xs" />
+                        SKU: {skuQuery}
+                      </motion.span>
+                    )}
                     {selectedCondiciones.map((cond) => (
                       <motion.span
                         key={cond}
@@ -2083,6 +2237,42 @@ const Catalogo = () => {
                                 )}
                               </div>
 
+                              {(product.marca || product.condicion || product.disponibilidad) && (
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                  {product.marca && (
+                                    <span className="px-2 py-1 text-[10px] font-semibold rounded-full bg-primary/10 text-primary">
+                                      Marca: {product.marca}
+                                    </span>
+                                  )}
+                                  {product.condicion && (
+                                    <span
+                                      className={`px-2 py-1 text-[10px] font-semibold rounded-full ${
+                                        product.condicion === "nuevo_original"
+                                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+                                          : product.condicion === "alternativo"
+                                          ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                                          : "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300"
+                                      }`}
+                                    >
+                                      {product.condicion === "nuevo_original"
+                                        ? "Nuevo Original"
+                                        : product.condicion === "alternativo"
+                                        ? "Alternativo"
+                                        : "Usado"}
+                                    </span>
+                                  )}
+                                  {product.disponibilidad && (
+                                    <span className="px-2 py-1 text-[10px] font-semibold rounded-full bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                                      {product.disponibilidad === "en_stock"
+                                        ? "En stock"
+                                        : product.disponibilidad === "en_oferta"
+                                        ? "En oferta"
+                                        : "Solo pedido"}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+
                               {product.stock > 0 && (
                                 <div className="flex items-center gap-2 mb-4">
                                   <div className="flex-1 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -2206,6 +2396,64 @@ const Catalogo = () => {
                                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
                                   {product.description || "Sin descripción disponible"}
                                 </p>
+                                {(product.marca || product.origen || product.condicion || product.disponibilidad || product.peso || product.SKU) && (
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3 text-xs">
+                                    {product.marca && (
+                                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                                        <span className="font-semibold text-gray-500 dark:text-gray-400">Marca:</span>
+                                        <span className="font-medium">{product.marca}</span>
+                                      </div>
+                                    )}
+                                    {product.origen && (
+                                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                                        <span className="font-semibold text-gray-500 dark:text-gray-400">Origen:</span>
+                                        <span className="font-medium">{product.origen}</span>
+                                      </div>
+                                    )}
+                                    {product.condicion && (
+                                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                                        <span className="font-semibold text-gray-500 dark:text-gray-400">Condición:</span>
+                                        <span className="font-medium">
+                                          {product.condicion === "nuevo_original"
+                                            ? "Nuevo Original"
+                                            : product.condicion === "alternativo"
+                                            ? "Alternativo"
+                                            : "Usado"}
+                                        </span>
+                                      </div>
+                                    )}
+                                    {product.disponibilidad && (
+                                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                                        <span className="font-semibold text-gray-500 dark:text-gray-400">Disponibilidad:</span>
+                                        <span className="font-medium">
+                                          {product.disponibilidad === "en_stock"
+                                            ? "En stock"
+                                            : product.disponibilidad === "en_oferta"
+                                            ? "En oferta"
+                                            : "Solo pedido"}
+                                        </span>
+                                      </div>
+                                    )}
+                                    {product.peso && (
+                                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                                        <span className="font-semibold text-gray-500 dark:text-gray-400">Peso:</span>
+                                        <span className="font-medium">{product.peso} kg</span>
+                                      </div>
+                                    )}
+                                    {product.compatibilidad && (
+                                      <div className="sm:col-span-2 text-gray-600 dark:text-gray-300">
+                                        <span className="font-semibold text-gray-500 dark:text-gray-400">Compatibilidad:</span>{" "}
+                                        <span className="font-medium">{product.compatibilidad}</span>
+                                      </div>
+                                    )}
+                                    {product.SKU && (
+                                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                                        <span className="font-semibold text-gray-500 dark:text-gray-400">SKU:</span>
+                                        <span className="font-medium">{product.SKU}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                                 <div className="flex items-baseline gap-2 mb-3">
                                   {product.precio_de_oferta ? (
                                     <>
@@ -2350,7 +2598,7 @@ const Catalogo = () => {
                         </div>
                       </div>
                       <a
-                        href="https://wa.me/51940226938"
+                        href="https://wa.me/5154221478"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 px-4 py-2.5 bg-green-500 text-white rounded-full font-semibold shadow-md hover:bg-green-600 hover:shadow-lg transition-all"

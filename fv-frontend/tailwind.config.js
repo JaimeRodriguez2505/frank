@@ -34,6 +34,12 @@ export default {
         'fv-gold-bright': 'var(--color-fv-gold-bright)',
         'fv-black': 'var(--color-fv-black)',
         'fv-gray': 'var(--color-fv-gray)',
+        // Compatibilidad con clases antiguas rh-*
+        'rh-teal': 'var(--color-primary)',
+        'rh-teal-light': 'var(--color-accent)',
+        'rh-gold': 'var(--color-fv-gold)',
+        'rh-accent': 'var(--color-secondary)',
+        'gray-850': '#1B1A20',
       },
       borderRadius: {
         'sm': 'var(--radius-sm)',

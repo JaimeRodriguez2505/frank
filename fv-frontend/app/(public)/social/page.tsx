@@ -340,28 +340,28 @@ const InstagramFeedSection = () => {
       </motion.h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-[1200px] mx-auto">
         <SocialCard
-          href="https://www.instagram.com/fvautoimportaciones/"
+          href="https://www.instagram.com/fran_kompetition"
           Icon={FaInstagram}
           title="Instagram"
-          description="Descubre nuestro contenido, novedades y momentos especiales."
+          description="Novedades, repuestos deportivos y trabajos de performance real."
           gradient="bg-gradient-to-br from-primary via-purple-500 to-orange-500"
           delay={0.1}
         />
 
         <SocialCard
-          href="https://www.tiktok.com/@fvautoimportaciones"
+          href="https://www.tiktok.com/@fv_autoimports?_r=1&_t=zs-91avhwthv3i"
           Icon={FaTiktokIcon}
           title="TikTok"
-          description="Videos, tendencias y demostraciones de nuestros productos."
+          description="Demostraciones, tips y contenido de autos y repuestos."
           gradient="bg-gradient-to-br from-gray-900 to-gray-700 dark:from-white dark:to-gray-200"
           delay={0.2}
         />
 
         <SocialCard
-          href="https://www.facebook.com/profile.php?id=61572916207328"
+          href="https://www.facebook.com/people/Fran-Kompetition/pfbid05e3H8Qx7GCa4mSBMcBuCbww4SszSJigS58k4CxTM3MTPK5eneaGN6nvfRUSmSG2yl/"
           Icon={FaFacebook}
           title="Facebook"
-          description="Sigue nuestras publicaciones y eventos especiales."
+          description="Publicaciones, catálogos y consultas rápidas."
           gradient="bg-gradient-to-br from-primary to-fv-gold"
           delay={0.3}
         />
@@ -381,18 +381,20 @@ const CallToAction = () => {
       className="text-center my-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-2xl p-12 shadow-xl border border-gray-200 dark:border-gray-800 max-w-[800px] mx-auto"
     >
       <h5 className="font-black mb-4 text-3xl md:text-4xl bg-gradient-to-r from-primary to-fv-gold bg-clip-text text-transparent">
-        ¿Listo para crear momentos especiales?
+        ¿Buscas un repuesto específico o mejorar el rendimiento de tu auto?
       </h5>
       <p className="text-gray-600 dark:text-gray-400 mb-8 text-lg">
-        Explora nuestros productos y encuentra el regalo perfecto.
+        Escríbenos por WhatsApp y recibe asesoría personalizada.
       </p>
       <motion.a
-        href="/catalogo"
+        href="https://wa.me/5154221478?text=Hola%2C%20quiero%20asesor%C3%ADa%20sobre%20repuestos%20y%20performance"
+        target="_blank"
+        rel="noopener noreferrer"
         whileHover={{ scale: 1.05, y: -2 }}
         whileTap={{ scale: 0.98 }}
         className="inline-flex items-center gap-2 py-4 px-8 rounded-xl text-white no-underline bg-gradient-to-r from-primary to-fv-gold hover:shadow-2xl transition-all font-bold text-lg shadow-lg"
       >
-        Ver productos
+        Escríbenos por WhatsApp
       </motion.a>
     </motion.div>
   );
@@ -427,8 +429,8 @@ const Social = () => {
               Nuestra Comunidad Social
             </h1>
             <p className="text-gray-600 dark:text-gray-400 text-lg md:text-xl max-w-[800px] mx-auto leading-relaxed">
-              Conecta con nosotros en redes sociales y descubre cómo nuestros
-              productos crean momentos especiales para nuestros clientes.
+              Conecta con nosotros en redes sociales y descubre repuestos deportivos,
+              asesorías y performance real para tu vehículo.
             </p>
           </motion.div>
 

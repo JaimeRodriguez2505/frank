@@ -1,5 +1,6 @@
-import { FaInstagram, FaFacebook, FaWhatsapp } from "react-icons/fa"
-import { MdEmail, MdPhone, MdLocationOn } from "react-icons/md"
+import { FaInstagram, FaFacebook, FaWhatsapp, FaLink } from "react-icons/fa"
+import { FaTiktok } from "react-icons/fa6"
+import { MdPhone, MdLocationOn, MdLink } from "react-icons/md"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion } from "framer-motion"
@@ -13,20 +14,32 @@ const Footer = () => {
     {
       name: "Instagram",
       icon: FaInstagram,
-      url: "#",
+      url: "https://www.instagram.com/fran_kompetition",
       color: "hover:text-fv-gold"
     },
     {
       name: "Facebook",
       icon: FaFacebook,
-      url: "#",
+      url: "https://www.facebook.com/people/Fran-Kompetition/pfbid05e3H8Qx7GCa4mSBMcBuCbww4SszSJigS58k4CxTM3MTPK5eneaGN6nvfRUSmSG2yl/",
+      color: "hover:text-fv-gold"
+    },
+    {
+      name: "TikTok",
+      icon: FaTiktok,
+      url: "https://www.tiktok.com/@fv_autoimports?_r=1&_t=zs-91avhwthv3i",
       color: "hover:text-fv-gold"
     },
     {
       name: "WhatsApp",
       icon: FaWhatsapp,
-      url: "https://wa.me/51940226938?text=Hola%2C%20me%20gustar%C3%ADa%20consultar%20sobre%20piezas%20y%20accesorios",
+      url: "https://wa.me/5154221478?text=Hola%2C%20me%20gustar%C3%ADa%20consultar%20sobre%20repuestos%20y%20accesorios",
       color: "hover:text-green-500"
+    },
+    {
+      name: "Canales oficiales",
+      icon: FaLink,
+      url: "https://www.atom.bio/frankompetition",
+      color: "hover:text-primary"
     }
   ]
 
@@ -46,9 +59,9 @@ const Footer = () => {
   ]
 
   const contactInfo = [
-    { icon: MdPhone, text: "+51 940 226 938", href: "tel:+51940226938", color: "text-primary" },
-    { icon: MdEmail, text: "contacto@fvautoimportaciones.com", href: "mailto:contacto@fvautoimportaciones.com", color: "text-primary" },
-    { icon: MdLocationOn, text: "Lima, Perú", href: null, color: "text-primary" }
+    { icon: MdPhone, text: "+51 54221478", href: "tel:+5154221478", color: "text-primary" },
+    { icon: MdLink, text: "atom.bio/frankompetition", href: "https://www.atom.bio/frankompetition", color: "text-primary" },
+    { icon: MdLocationOn, text: "Envíos a nivel nacional", href: null, color: "text-primary" }
   ]
 
   return (
@@ -109,7 +122,7 @@ const Footer = () => {
               </motion.div>
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
-              Piezas de alto rendimiento para tu pasión automotriz 🏁
+              Repuestos deportivos | Importación directa | Performance real | Planchado y pintura
             </p>
 
             {/* Social Media Links */}

@@ -4,46 +4,51 @@ import { motion } from "framer-motion"
 import { 
   CarFront, 
   Gauge, 
-  Wrench, 
   MapPin, 
   Mail, 
   Award,
+  Globe,
   Sparkles,
-  TrendingUp,
   ShieldCheck
 } from "lucide-react"
 import { FaWhatsapp, FaFacebook, FaInstagram } from "react-icons/fa"
 import { FaTiktok } from "react-icons/fa6"
 const acercaImage = "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=2070&auto=format&fit=crop"
 import { useParallax } from "@/hooks/useParallax"
-import { useAnimatedCounter } from "@/hooks/useAnimatedCounter"
 import {
   fadeInUp,
   staggerContainer
 } from "@/config/animationVariants"
 
-// Componente para stats counter animado
-const AnimatedStat = ({ value, suffix = "", label }: { value: number; suffix?: string; label: string }) => {
-  const count = useAnimatedCounter(value, 2)
-
-  return (
-    <motion.div
-      variants={fadeInUp}
-      className="text-center group"
-    >
-      <motion.div className="text-5xl md:text-6xl font-black bg-gradient-to-r from-primary via-fv-gold to-primary bg-clip-text text-transparent bg-[length:200%_auto] group-hover:animate-shimmer">
-        <motion.span>{count}</motion.span>
-        {suffix}
-      </motion.div>
-      <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mt-3 font-medium tracking-wide">
-        {label}
-      </p>
-    </motion.div>
-  )
-}
-
 const AcercaDe = () => {
   const { ref: parallaxRef, y: parallaxY } = useParallax(150)
+  const diferenciales = [
+    {
+      icon: Globe,
+      title: "Importación directa",
+      desc: "Sin intermediarios, con tiempos claros y un proceso seguro."
+    },
+    {
+      icon: ShieldCheck,
+      title: "Productos originales",
+      desc: "Repuestos 100% originales y alternativos de marcas internacionales."
+    },
+    {
+      icon: Gauge,
+      title: "Especialistas en performance",
+      desc: "Piezas orientadas al performance real para mejorar respuesta y potencia."
+    },
+    {
+      icon: Award,
+      title: "Compra segura",
+      desc: "Compatibilidad perfecta y respaldo real en cada compra."
+    },
+    {
+      icon: Sparkles,
+      title: "Atención humana",
+      desc: "Asesoría personalizada, sin respuestas automáticas."
+    },
+  ]
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-primary/5 dark:from-gray-950 dark:via-gray-900 dark:to-black relative overflow-hidden">
@@ -88,7 +93,7 @@ const AcercaDe = () => {
             </span>
           </h1>
           <p className="text-gray-700 dark:text-gray-300 text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed font-light">
-            Especialistas en importación de piezas automotrices de alto rendimiento y calidad
+            Somos una empresa especializada en la importación y venta de repuestos y accesorios automotrices, orientados a clientes que buscan calidad, rendimiento y respaldo real.
           </p>
         </motion.div>
 
@@ -117,19 +122,19 @@ const AcercaDe = () => {
 
             <div className="space-y-5">
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base md:text-lg font-light">
-                FV Auto Importaciones nació de la pasión por el automovilismo y el deseo de ofrecer piezas de la más alta calidad al mercado peruano.
+                Somos una empresa especializada en la importación y venta de repuestos y accesorios automotrices, orientados a clientes que buscan calidad, rendimiento y respaldo real.
               </p>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base md:text-lg font-light">
-                Iniciamos como importadores especializados en piezas de alto rendimiento, enfocados en brindar soluciones automotrices que combinan calidad, performance y confiabilidad.
+                Importamos directamente repuestos 100% originales y alternativos de las mejores marcas internacionales, asegurando calidad, durabilidad y compatibilidad perfecta.
               </p>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base md:text-lg font-light">
-                Cada pieza que importamos es seleccionada cuidadosamente, garantizando su autenticidad y rendimiento óptimo para tu vehículo.
+                Nuestros productos están orientados al performance real: mejoran la respuesta, potencia, estética y experiencia de manejo, tanto para uso diario como deportivo.
               </p>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base md:text-lg font-light">
-                En FV Auto Importaciones, no solo vendemos piezas, transformamos tu experiencia de conducción con productos de primer nivel y asesoría técnica especializada.
+                Te asesoramos según marca, modelo, año y objetivo de tu auto para que compres exactamente lo que necesitas.
               </p>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base md:text-lg font-light">
-                Continuamos expandiéndonos, innovando y trayendo las mejores marcas del mercado internacional para satisfacer las necesidades de los entusiastas automotrices más exigentes.
+                Creemos que un auto no es solo transporte: es pasión, identidad y rendimiento. Por eso trabajamos con productos que realmente marcan diferencia.
               </p>
             </div>
           </motion.div>
@@ -163,7 +168,7 @@ const AcercaDe = () => {
           </motion.div>
         </div>
 
-        {/* Stats Section - Modern 2025 design */}
+        {/* Filosofía Section */}
         <motion.section
           variants={staggerContainer}
           initial="hidden"
@@ -172,15 +177,18 @@ const AcercaDe = () => {
           className="mb-20 relative"
         >
           <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-2xl rounded-3xl p-10 md:p-16 shadow-2xl border border-gray-200/50 dark:border-gray-800/50 relative overflow-hidden">
-            {/* Decorative elements */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl"></div>
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tl from-fv-gold/10 to-transparent rounded-full blur-3xl"></div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 relative z-10">
-              <AnimatedStat value={150} suffix="+" label="Clientes Satisfechos" />
-              <AnimatedStat value={500} suffix="+" label="Piezas Importadas" />
-              <AnimatedStat value={15} suffix="+" label="Marcas Premium" />
-              <AnimatedStat value={100} suffix="%" label="Garantía de Calidad" />
+
+            <div className="relative z-10 text-center max-w-4xl mx-auto">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/30 mb-6">
+                <Sparkles className="w-4 h-4 text-primary" />
+                <span className="text-sm font-semibold text-primary dark:text-fv-gold">Nuestra Filosofía</span>
+              </div>
+              <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed font-light">
+                En FV Auto Importaciones creemos que un auto no es solo transporte, es pasión, identidad y rendimiento.
+                Por eso trabajamos con productos que realmente marcan diferencia.
+              </p>
             </div>
           </div>
         </motion.section>
@@ -202,12 +210,12 @@ const AcercaDe = () => {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/30 mb-6"
             >
               <Award className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-primary dark:text-fv-gold">Nuestros Valores</span>
+              <span className="text-sm font-semibold text-primary dark:text-fv-gold">Qué nos diferencia</span>
             </motion.div>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight">
-              Nuestros{" "}
+              ¿Qué{" "}
               <span className="bg-gradient-to-r from-primary via-fv-gold to-primary bg-clip-text text-transparent bg-[length:200%_auto] animate-shimmer">
-                Valores
+                nos diferencia?
               </span>
             </h2>
           </motion.div>
@@ -217,104 +225,37 @@ const AcercaDe = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.1 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            <motion.div
-              variants={fadeInUp}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className="group relative bg-white/70 dark:bg-gray-900/70 backdrop-blur-2xl rounded-3xl p-8 shadow-xl border border-gray-200/50 dark:border-gray-800/50 text-center overflow-hidden transition-all duration-500 hover:border-primary/50 dark:hover:border-primary/50"
-            >
-              {/* Modern glow effect */}
-              <div className="absolute -inset-0.5 bg-gradient-to-br from-primary/30 via-fv-gold/30 to-primary/30 rounded-3xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 -z-10"></div>
-              
-              <div className="relative z-10">
+            {diferenciales.map((item, index) => {
+              const Icon = item.icon
+              return (
                 <motion.div
-                  className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary to-fv-gold flex items-center justify-center shadow-lg group-hover:shadow-2xl group-hover:scale-110 transition-all duration-300"
-                  whileHover={{ rotate: [0, -5, 5, -5, 0] }}
-                  transition={{ duration: 0.5 }}
+                  key={item.title}
+                  variants={fadeInUp}
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  className="group relative bg-white/70 dark:bg-gray-900/70 backdrop-blur-2xl rounded-3xl p-8 shadow-xl border border-gray-200/50 dark:border-gray-800/50 text-center overflow-hidden transition-all duration-500 hover:border-primary/50 dark:hover:border-primary/50"
                 >
-                  <ShieldCheck className="text-white w-8 h-8" strokeWidth={2.5} />
+                  <div className="absolute -inset-0.5 bg-gradient-to-br from-primary/30 via-fv-gold/30 to-primary/30 rounded-3xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 -z-10"></div>
+
+                  <div className="relative z-10">
+                    <motion.div
+                      className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary to-fv-gold flex items-center justify-center shadow-lg group-hover:shadow-2xl group-hover:scale-110 transition-all duration-300"
+                      whileHover={{ rotate: [0, -5, 5, -5, 0] }}
+                      transition={{ duration: 0.5, delay: index * 0.02 }}
+                    >
+                      <Icon className="text-white w-8 h-8" strokeWidth={2.5} />
+                    </motion.div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-primary dark:group-hover:text-fv-gold transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm font-light">
+                      {item.desc}
+                    </p>
+                  </div>
                 </motion.div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-primary dark:group-hover:text-fv-gold transition-colors">
-                  Calidad Garantizada
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm font-light">
-                  Importación directa de piezas originales con certificados de autenticidad y garantía de fábrica.
-                </p>
-              </div>
-            </motion.div>
-
-            <motion.div
-              variants={fadeInUp}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className="group relative bg-white/70 dark:bg-gray-900/70 backdrop-blur-2xl rounded-3xl p-8 shadow-xl border border-gray-200/50 dark:border-gray-800/50 text-center overflow-hidden transition-all duration-500 hover:border-primary/50 dark:hover:border-primary/50"
-            >
-              <div className="absolute -inset-0.5 bg-gradient-to-br from-primary/30 via-fv-gold/30 to-primary/30 rounded-3xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 -z-10"></div>
-
-              <div className="relative z-10">
-                <motion.div
-                  className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary to-fv-gold flex items-center justify-center shadow-lg group-hover:shadow-2xl group-hover:scale-110 transition-all duration-300"
-                  whileHover={{ rotate: [0, -5, 5, -5, 0] }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <Wrench className="text-white w-8 h-8" strokeWidth={2.5} />
-                </motion.div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-primary dark:group-hover:text-fv-gold transition-colors">
-                  Asesoría Técnica
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm font-light">
-                  Equipo especializado que te guía en la selección de las piezas ideales para tu proyecto automotriz.
-                </p>
-              </div>
-            </motion.div>
-
-            <motion.div
-              variants={fadeInUp}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className="group relative bg-white/70 dark:bg-gray-900/70 backdrop-blur-2xl rounded-3xl p-8 shadow-xl border border-gray-200/50 dark:border-gray-800/50 text-center overflow-hidden transition-all duration-500 hover:border-primary/50 dark:hover:border-primary/50"
-            >
-              <div className="absolute -inset-0.5 bg-gradient-to-br from-primary/30 via-fv-gold/30 to-primary/30 rounded-3xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 -z-10"></div>
-
-              <div className="relative z-10">
-                <motion.div
-                  className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary to-fv-gold flex items-center justify-center shadow-lg group-hover:shadow-2xl group-hover:scale-110 transition-all duration-300"
-                  whileHover={{ rotate: [0, -5, 5, -5, 0] }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <Gauge className="text-white w-8 h-8" strokeWidth={2.5} />
-                </motion.div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-primary dark:group-hover:text-fv-gold transition-colors">
-                  Alto Rendimiento
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm font-light">
-                  Piezas diseñadas para maximizar el performance, la seguridad y la experiencia de manejo.
-                </p>
-              </div>
-            </motion.div>
-
-            <motion.div
-              variants={fadeInUp}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className="group relative bg-white/70 dark:bg-gray-900/70 backdrop-blur-2xl rounded-3xl p-8 shadow-xl border border-gray-200/50 dark:border-gray-800/50 text-center overflow-hidden transition-all duration-500 hover:border-primary/50 dark:hover:border-primary/50"
-            >
-              <div className="absolute -inset-0.5 bg-gradient-to-br from-primary/30 via-fv-gold/30 to-primary/30 rounded-3xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 -z-10"></div>
-
-              <div className="relative z-10">
-                <motion.div
-                  className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary to-fv-gold flex items-center justify-center shadow-lg group-hover:shadow-2xl group-hover:scale-110 transition-all duration-300"
-                  whileHover={{ rotate: [0, -5, 5, -5, 0] }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <TrendingUp className="text-white w-8 h-8" strokeWidth={2.5} />
-                </motion.div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-primary dark:group-hover:text-fv-gold transition-colors">
-                  Pasión Automotriz
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm font-light">
-                  Compartimos tu pasión por los autos y te ofrecemos productos que transforman tu vehículo.
-                </p>
-              </div>
-            </motion.div>
+              )
+            })}
           </motion.div>
         </motion.section>
 
@@ -356,12 +297,12 @@ const AcercaDe = () => {
               <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary to-fv-gold flex items-center justify-center shadow-lg group-hover:shadow-2xl group-hover:scale-110 transition-all duration-300">
                 <MapPin className="text-white w-8 h-8" strokeWidth={2.5} />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary dark:group-hover:text-fv-gold transition-colors">Ubicación</h3>
-              <p className="text-gray-600 dark:text-gray-300 font-light">Lima, Perú</p>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary dark:group-hover:text-fv-gold transition-colors">Cobertura</h3>
+              <p className="text-gray-600 dark:text-gray-300 font-light">Envíos a nivel nacional</p>
             </motion.div>
 
             <motion.a
-              href={`https://wa.me/51940226938?text=${encodeURIComponent('Hola, me gustaría consultar sobre piezas y accesorios automotrices.')}`}
+              href={`https://wa.me/5154221478?text=${encodeURIComponent('Hola, me gustaría consultar sobre repuestos y accesorios automotrices.')}`}
               target="_blank"
               rel="noopener noreferrer"
               initial={{ opacity: 0, y: 30 }}
@@ -376,11 +317,13 @@ const AcercaDe = () => {
                 <FaWhatsapp className="text-white text-2xl" />
               </div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-green-600 transition-colors">WhatsApp</h3>
-              <p className="text-gray-600 dark:text-gray-300 font-light">940 226 938</p>
+              <p className="text-gray-600 dark:text-gray-300 font-light">+51 54221478</p>
             </motion.a>
 
             <motion.a
-              href={`mailto:contacto@fvautoimportaciones.com?subject=${encodeURIComponent('Consulta FV Auto Importaciones')}&body=${encodeURIComponent('Hola, me gustaría obtener información sobre piezas y accesorios automotrices.')}`}
+              href="https://www.atom.bio/frankompetition"
+              target="_blank"
+              rel="noopener noreferrer"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -390,10 +333,10 @@ const AcercaDe = () => {
             >
               <div className="absolute -inset-0.5 bg-gradient-to-br from-primary/20 to-fv-gold/20 rounded-3xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 -z-10"></div>
               <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary to-fv-gold flex items-center justify-center shadow-lg group-hover:shadow-2xl group-hover:scale-110 transition-all duration-300">
-                <Mail className="text-white w-8 h-8" strokeWidth={2.5} />
+                <Globe className="text-white w-8 h-8" strokeWidth={2.5} />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary dark:group-hover:text-fv-gold transition-colors">Email</h3>
-              <p className="text-gray-600 dark:text-gray-300 font-light text-sm break-all">contacto@fvautoimportaciones.com</p>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary dark:group-hover:text-fv-gold transition-colors">Canales oficiales</h3>
+              <p className="text-gray-600 dark:text-gray-300 font-light text-sm break-all">atom.bio/frankompetition</p>
             </motion.a>
           </div>
 
@@ -406,7 +349,7 @@ const AcercaDe = () => {
             className="flex justify-center gap-4"
           >
             <motion.a
-              href="https://www.facebook.com/fvautoimportaciones"
+              href="https://www.facebook.com/people/Fran-Kompetition/pfbid05e3H8Qx7GCa4mSBMcBuCbww4SszSJigS58k4CxTM3MTPK5eneaGN6nvfRUSmSG2yl/"
               target="_blank"
               rel="noopener noreferrer"
               whileHover={{ scale: 1.15, y: -4 }}
@@ -417,7 +360,7 @@ const AcercaDe = () => {
               <FaFacebook />
             </motion.a>
             <motion.a
-              href="https://www.instagram.com/fvautoimportaciones/"
+              href="https://www.instagram.com/fran_kompetition"
               target="_blank"
               rel="noopener noreferrer"
               whileHover={{ scale: 1.15, y: -4 }}
@@ -428,7 +371,7 @@ const AcercaDe = () => {
               <FaInstagram />
             </motion.a>
             <motion.a
-              href="https://www.tiktok.com/@fvautoimportaciones"
+              href="https://www.tiktok.com/@fv_autoimports?_r=1&_t=zs-91avhwthv3i"
               target="_blank"
               rel="noopener noreferrer"
               whileHover={{ scale: 1.15, y: -4 }}

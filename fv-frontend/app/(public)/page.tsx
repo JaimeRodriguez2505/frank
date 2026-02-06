@@ -44,7 +44,14 @@ interface Product {
   precio_de_oferta?: number
   stock: number
   imagen?: string
-  subCategory?: {
+  SKU?: string
+  compatibilidad?: string
+  origen?: string
+  marca?: string
+  peso?: number
+  condicion?: 'nuevo_original' | 'alternativo' | 'usado'
+  disponibilidad?: 'en_stock' | 'en_oferta' | 'solo_pedido'
+  category?: {
     id: number
     name: string
   }
@@ -94,7 +101,7 @@ const QuickViewModal = ({ product, onClose, onAddToCart }: QuickViewModalProps) 
 
   const getWhatsAppLink = () => {
     const message = `Hola, quiero información sobre: ${product.name} - Precio: S/ ${product.precio_de_oferta ?? product.price}`
-    return `https://wa.me/51940226938?text=${encodeURIComponent(message)}`
+    return `https://wa.me/5154221478?text=${encodeURIComponent(message)}`
   }
 
   return (
@@ -147,7 +154,7 @@ const QuickViewModal = ({ product, onClose, onAddToCart }: QuickViewModalProps) 
             <div className="flex flex-col">
               <div className="flex-1">
                 <div className="inline-block px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium mb-3">
-                  {product.subCategory?.name || "General"}
+                  {product.category?.name || "General"}
                 </div>
 
                 <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">{product.name}</h2>
@@ -179,6 +186,95 @@ const QuickViewModal = ({ product, onClose, onAddToCart }: QuickViewModalProps) 
                     </p>
                   )}
                 </div>
+
+                {(product.compatibilidad || product.origen || product.marca || product.peso || product.condicion || product.disponibilidad || product.SKU) && (
+                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-5 mb-6 space-y-3">
+                    <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wide mb-3">
+                      Especificaciones
+                    </h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      {product.compatibilidad && (
+                        <div className="col-span-2">
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide block mb-1">
+                            Compatibilidad
+                          </span>
+                          <span className="text-sm text-gray-900 dark:text-white">
+                            {product.compatibilidad}
+                          </span>
+                        </div>
+                      )}
+                      {product.marca && (
+                        <div>
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide block mb-1">
+                            Marca
+                          </span>
+                          <span className="text-sm text-gray-900 dark:text-white font-semibold">
+                            {product.marca}
+                          </span>
+                        </div>
+                      )}
+                      {product.SKU && (
+                        <div>
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide block mb-1">
+                            SKU
+                          </span>
+                          <span className="text-sm text-gray-900 dark:text-white font-semibold">
+                            {product.SKU}
+                          </span>
+                        </div>
+                      )}
+                      {product.origen && (
+                        <div>
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide block mb-1">
+                            Origen
+                          </span>
+                          <span className="text-sm text-gray-900 dark:text-white">
+                            {product.origen}
+                          </span>
+                        </div>
+                      )}
+                      {product.peso && (
+                        <div>
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide block mb-1">
+                            Peso
+                          </span>
+                          <span className="text-sm text-gray-900 dark:text-white">
+                            {product.peso} kg
+                          </span>
+                        </div>
+                      )}
+                      {product.disponibilidad && (
+                        <div>
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide block mb-1">
+                            Disponibilidad
+                          </span>
+                          <span className="text-sm text-gray-900 dark:text-white">
+                            {product.disponibilidad === 'en_stock'
+                              ? 'En stock'
+                              : product.disponibilidad === 'en_oferta'
+                              ? 'En oferta'
+                              : 'Solo pedido'}
+                          </span>
+                        </div>
+                      )}
+                      {product.condicion && (
+                        <div>
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide block mb-1">
+                            Condición
+                          </span>
+                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
+                            product.condicion === 'nuevo_original' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+                            product.condicion === 'alternativo' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
+                            'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400'
+                          }`}>
+                            {product.condicion === 'nuevo_original' ? 'Nuevo Original' :
+                             product.condicion === 'alternativo' ? 'Alternativo' : 'Usado'}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex items-center gap-2 mb-6">
                   {product.stock > 0 ? (
@@ -260,11 +356,31 @@ const Home = () => {
   }
 
   const fallbackBanners: Banner[] = [
-    { image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000&auto=format&fit=crop", title: "Importación de Vehículos Exclusivos" },
-    { image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=2000&auto=format&fit=crop", title: "Repuestos de Alto Rendimiento" },
-    { image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2000&auto=format&fit=crop", title: "Tuning y Personalización" },
-    { image: "https://images.unsplash.com/photo-1503376763036-066120622c74?q=80&w=2000&auto=format&fit=crop", title: "Asesoría Especializada" },
-    { image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=2000&auto=format&fit=crop", title: "La Mejor Experiencia Racing" },
+    {
+      image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000&auto=format&fit=crop",
+      title: "Importación Directa de Repuestos",
+      subtitle: "Repuestos deportivos | Importación directa | Performance real | Planchado y pintura",
+    },
+    {
+      image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=2000&auto=format&fit=crop",
+      title: "Repuestos Deportivos y Accesorios",
+      subtitle: "Originalidad, rendimiento y respaldo real para tu vehículo",
+    },
+    {
+      image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2000&auto=format&fit=crop",
+      title: "Performance Real",
+      subtitle: "Piezas pensadas para mejorar respuesta, potencia y estética",
+    },
+    {
+      image: "https://images.unsplash.com/photo-1503376763036-066120622c74?q=80&w=2000&auto=format&fit=crop",
+      title: "Asesoría Especializada",
+      subtitle: "Te asesoramos según marca, modelo, año y objetivo de tu auto",
+    },
+    {
+      image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=2000&auto=format&fit=crop",
+      title: "Planchado y Pintura",
+      subtitle: "Detalles y acabados con enfoque deportivo",
+    },
   ]
 
   const [banners, setBanners] = useState<Banner[]>([])
@@ -296,14 +412,24 @@ const Home = () => {
 
     const imagen = obj.imagen as string | undefined
 
-    const sc = obj.subCategory as { id?: number | string; name?: unknown } | undefined
-    const subCategory =
-      sc && typeof sc === "object"
+    const catRaw = (obj.category ?? obj.subCategory) as { id?: number | string; name?: unknown } | undefined
+    const category =
+      catRaw && typeof catRaw === "object"
         ? {
-            id: typeof sc.id === "string" ? Number(sc.id) : typeof sc.id === "number" ? sc.id : 0,
-            name: String(sc.name ?? "General"),
+            id: typeof catRaw.id === "string" ? Number(catRaw.id) : typeof catRaw.id === "number" ? catRaw.id : 0,
+            name: String(catRaw.name ?? "General"),
           }
         : undefined
+
+    const pesoRaw = obj.peso as number | string | undefined
+    const peso =
+      pesoRaw == null
+        ? undefined
+        : typeof pesoRaw === "string"
+          ? Number(pesoRaw)
+          : typeof pesoRaw === "number"
+            ? pesoRaw
+            : undefined
 
     return {
       id,
@@ -313,7 +439,14 @@ const Home = () => {
       precio_de_oferta: offer !== undefined && Number.isNaN(offer as number) ? undefined : (offer as number | undefined),
       stock,
       imagen,
-      subCategory,
+      category,
+      SKU: obj.SKU as string | undefined,
+      compatibilidad: obj.compatibilidad as string | undefined,
+      origen: obj.origen as string | undefined,
+      marca: obj.marca as string | undefined,
+      peso: peso !== undefined && Number.isNaN(peso) ? undefined : peso,
+      condicion: obj.condicion as Product["condicion"] | undefined,
+      disponibilidad: obj.disponibilidad as Product["disponibilidad"] | undefined,
     }
   }
 
@@ -611,10 +744,26 @@ const Home = () => {
           className="max-w-7xl mx-auto px-4 md:px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10"
         >
           {[
-            { icon: FaCar, title: "Piezas Originales", desc: "Importación directa de piezas de las mejores marcas" },
-            { icon: FaTachometerAlt, title: "Alto Rendimiento", desc: "Piezas diseñadas para maximizar performance" },
-            { icon: FaTools, title: "Asesoría Especializada", desc: "Te guiamos en la selección perfecta" },
-            { icon: FaCog, title: "Garantía y Soporte", desc: "Respaldo completo con garantía post-venta" },
+            {
+              icon: FaCar,
+              title: "Piezas Originales Garantizadas",
+              desc: "Repuestos 100% originales y alternativos de marcas internacionales.",
+            },
+            {
+              icon: FaTachometerAlt,
+              title: "Alto Rendimiento",
+              desc: "Performance real para mejorar respuesta, potencia y estética.",
+            },
+            {
+              icon: FaTools,
+              title: "Asesoría Especializada",
+              desc: "Te guiamos según marca, modelo, año y objetivo de tu auto.",
+            },
+            {
+              icon: FaCog,
+              title: "Compra segura",
+              desc: "Proceso claro, compatibilidad perfecta y atención humana.",
+            },
           ].map((feature, idx) => {
             const Icon = feature.icon
             return (
@@ -719,7 +868,7 @@ const Home = () => {
                     <div className="p-5">
                       <div className="text-xs text-primary font-medium mb-2 flex items-center gap-1">
                         <FaLayerGroup className="text-xs" />
-                        {product.subCategory?.name || "General"}
+                        {product.category?.name || "General"}
                       </div>
 
                       <Link href={`/producto/${product.id}`}>
@@ -775,7 +924,7 @@ const Home = () => {
                         <span className="text-sm">Agregar</span>
                       </button>
                       <a
-                        href={`https://wa.me/51940226938?text=Hola,%20estoy%20interesado%20en:%20${product.name}`}
+                        href={`https://wa.me/5154221478?text=Hola,%20estoy%20interesado%20en:%20${product.name}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-2.5 bg-green-500 text-white rounded-xl hover:bg-green-600 hover:scale-110 transition-all"
@@ -835,7 +984,7 @@ const Home = () => {
                 </div>
               </div>
               <a
-                href="https://wa.me/51940226938"
+                href="https://wa.me/5154221478"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-4 py-2.5 bg-green-500 text-white rounded-full font-semibold shadow-md hover:bg-green-600 hover:shadow-lg transition-all"

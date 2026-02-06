@@ -33,12 +33,20 @@ interface Product {
   price: number;
   precio_de_oferta?: number;
   stock: number;
+  SKU?: string;
   imagen?: string;
   images?: ProductImage[];
-  subCategory?: {
+  category_id?: number;
+  category?: {
     id: number;
     name: string;
   };
+  compatibilidad?: string;
+  origen?: string;
+  marca?: string;
+  peso?: number;
+  condicion?: 'nuevo_original' | 'alternativo' | 'usado';
+  disponibilidad?: 'en_stock' | 'en_oferta' | 'solo_pedido';
 }
 
 const cardVariants = {
@@ -113,8 +121,12 @@ function DetalleProducto() {
         // Obtener productos relacionados (misma subcategoría)
         const allProductsRes = await productService.getAll()
         const allProductsData = allProductsRes.data.data || allProductsRes.data || []
+        const relatedCategoryId = productData.category?.id ?? productData.category_id
         const related = allProductsData
-          .filter((p: Product) => p.subCategory?.id === productData.subCategory?.id && p.id !== productData.id)
+          .filter((p: Product) => {
+            const categoryId = p.category?.id ?? p.category_id
+            return relatedCategoryId && categoryId === relatedCategoryId && p.id !== productData.id
+          })
           .slice(0, 4)
 
         setRelatedProducts(related)
@@ -132,7 +144,7 @@ function DetalleProducto() {
   const getWhatsAppLink = (product: Product) => {
     if (!product) return "#"
     const message = `Hola, estoy interesado en el producto "${product.name}" con precio ${product.precio_de_oferta ? `S/ ${product.precio_de_oferta}` : `S/ ${product.price}`}. ¿Podrías darme más información?`
-    return `https://wa.me/51940226938?text=${encodeURIComponent(message)}`
+    return `https://wa.me/5154221478?text=${encodeURIComponent(message)}`
   }
 
   // Estructura del carrito para evitar 'any'
@@ -248,6 +260,24 @@ function DetalleProducto() {
       </div>
     )
   }
+
+  const conditionLabel = product.condicion
+    ? product.condicion === "nuevo_original"
+      ? "Nuevo Original"
+      : product.condicion === "alternativo"
+      ? "Alternativo"
+      : "Usado"
+    : null
+
+  const availabilityLabel = product.disponibilidad
+    ? product.disponibilidad === "en_stock"
+      ? "En stock"
+      : product.disponibilidad === "en_oferta"
+      ? "En oferta"
+      : "Solo pedido"
+    : product.stock > 0
+    ? "En stock"
+    : "Agotado"
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-white to-secondary/70 dark:from-gray-950 dark:via-gray-900 dark:to-black relative overflow-hidden">
@@ -457,7 +487,7 @@ function DetalleProducto() {
               className="inline-block"
             >
               <span className="px-4 py-2 bg-gradient-to-r from-primary/10 to-primary/10 border border-primary/20 dark:border-primary/20 rounded-xl text-fv-gold dark:text-fv-gold text-sm font-semibold">
-                {product.subCategory?.name || "Categoría"}
+                {product.category?.name || "Categoría"}
               </span>
             </motion.div>
 
@@ -498,28 +528,81 @@ function DetalleProducto() {
               <p>{product.description || "Sin descripción disponible."}</p>
             </motion.div>
 
-            {/* Product Details */}
+            {/* Ficha técnica */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 border border-gray-200 dark:border-gray-700 space-y-3"
+              className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 border border-gray-200 dark:border-gray-700 space-y-4"
             >
-              <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-fv-gold flex items-center justify-center">
-                  <FaCheck className="text-white text-sm" />
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wide">
+                Ficha técnica
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                  <span className="font-semibold text-gray-500 dark:text-gray-400">ID:</span>
+                  <span className="font-medium">{product.id}</span>
                 </div>
-                <span className="font-medium">ID: {product.id}</span>
-              </div>
-              <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-fv-gold flex items-center justify-center">
-                  <FaCheck className="text-white text-sm" />
-                </div>
-                <span className="font-medium">
-                  Disponibilidad: <span className={product.stock > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}>
-                    {product.stock > 0 ? "En stock" : "Agotado"}
+                {product.SKU && (
+                  <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                    <span className="font-semibold text-gray-500 dark:text-gray-400">SKU:</span>
+                    <span className="font-medium">{product.SKU}</span>
+                  </div>
+                )}
+                {product.category?.name && (
+                  <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                    <span className="font-semibold text-gray-500 dark:text-gray-400">Categoría:</span>
+                    <span className="font-medium">{product.category.name}</span>
+                  </div>
+                )}
+                {product.marca && (
+                  <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                    <span className="font-semibold text-gray-500 dark:text-gray-400">Marca:</span>
+                    <span className="font-medium">{product.marca}</span>
+                  </div>
+                )}
+                {product.origen && (
+                  <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                    <span className="font-semibold text-gray-500 dark:text-gray-400">Origen:</span>
+                    <span className="font-medium">{product.origen}</span>
+                  </div>
+                )}
+                {typeof product.peso === "number" && (
+                  <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                    <span className="font-semibold text-gray-500 dark:text-gray-400">Peso:</span>
+                    <span className="font-medium">{product.peso} kg</span>
+                  </div>
+                )}
+                {conditionLabel && (
+                  <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                    <span className="font-semibold text-gray-500 dark:text-gray-400">Condición:</span>
+                    <span className={`inline-flex px-3 py-1 rounded-full text-xs font-bold ${
+                      product.condicion === "nuevo_original"
+                        ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+                        : product.condicion === "alternativo"
+                        ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                        : "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300"
+                    }`}>
+                      {conditionLabel}
+                    </span>
+                  </div>
+                )}
+                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                  <span className="font-semibold text-gray-500 dark:text-gray-400">Disponibilidad:</span>
+                  <span className={`font-medium ${availabilityLabel === "Agotado" ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"}`}>
+                    {availabilityLabel}
                   </span>
-                </span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                  <span className="font-semibold text-gray-500 dark:text-gray-400">Stock:</span>
+                  <span className="font-medium">{product.stock} unidades</span>
+                </div>
+                {product.compatibilidad && (
+                  <div className="sm:col-span-2 text-gray-700 dark:text-gray-300">
+                    <span className="font-semibold text-gray-500 dark:text-gray-400 block mb-1">Compatibilidad:</span>
+                    <span className="font-medium">{product.compatibilidad}</span>
+                  </div>
+                )}
               </div>
             </motion.div>
 
@@ -605,7 +688,7 @@ function DetalleProducto() {
                     </div>
                     <div className="p-5 space-y-2">
                       <div className="text-fv-gold dark:text-fv-gold text-xs font-semibold uppercase tracking-wide">
-                        {relatedProduct.subCategory?.name || "Categoría"}
+                        {relatedProduct.category?.name || "Categoría"}
                       </div>
                       <h3 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-2 group-hover:text-fv-gold dark:group-hover:text-fv-gold transition-colors">
                         {relatedProduct.name}

@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Formik, Form, Field, ErrorMessage } from "formik"
 import * as Yup from "yup"
 import { motion, AnimatePresence } from "framer-motion"
-import { FaEnvelope, FaPhone, FaUser, FaTag, FaList, FaCheckCircle, FaPaperPlane } from "react-icons/fa"
+import { FaEnvelope, FaPhone, FaUser, FaTag, FaList, FaCheckCircle, FaPaperPlane, FaWhatsapp, FaLink } from "react-icons/fa"
 import { toast } from "react-toastify"
 import api from "@/services/api"
 import {
@@ -38,11 +38,11 @@ const ContactSchema = Yup.object().shape({
 
 // Categorías para el formulario
 const categorias = [
-  "Consulta sobre piezas y repuestos",
-  "Asesoría en tunning",
-  "Importación de accesorios racing",
-  "Cotización de productos",
-  "Instalación y soporte técnico",
+  "Consulta de repuestos y accesorios",
+  "Asesoría en performance",
+  "Pedidos especiales / importación bajo pedido",
+  "Reparación de tapas de timón (airbag)",
+  "Planchado y pintura",
   "Otros"
 ]
 
@@ -253,7 +253,7 @@ const Contacto = () => {
             Contáctanos
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            Estamos aquí para ayudarte. Completa el formulario y nos pondremos en contacto contigo lo antes posible.
+            Atención directa y rápida por WhatsApp para cotizaciones, consultas técnicas y seguimiento de pedidos.
           </p>
         </motion.div>
 
@@ -268,23 +268,23 @@ const Contacto = () => {
             </h2>
 
             <div className="space-y-8">
-              <motion.div
+              <motion.a
                 whileHover={{ x: 4 }}
                 className="flex items-start"
+                href="https://wa.me/5154221478?text=Hola%2C%20quisiera%20asesor%C3%ADa%20sobre%20repuestos%20y%20accesorios"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-fv-gold flex items-center justify-center shadow-lg">
-                  <FaEnvelope className="h-6 w-6 text-white" />
+                <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg">
+                  <FaWhatsapp className="h-6 w-6 text-white" />
                 </div>
                 <div className="ml-5">
-                  <p className="text-sm font-bold text-gray-900 dark:text-white mb-1">Email</p>
-                  <a
-                    href="mailto:contacto@fvautoimportaciones.com"
-                    className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-fv-gold transition-colors"
-                  >
-                    contacto@fvautoimportaciones.com
-                  </a>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white mb-1">WhatsApp</p>
+                  <span className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-fv-gold transition-colors">
+                    +51 54221478
+                  </span>
                 </div>
-              </motion.div>
+              </motion.a>
 
               <motion.div
                 whileHover={{ x: 4 }}
@@ -296,31 +296,31 @@ const Contacto = () => {
                 <div className="ml-5">
                   <p className="text-sm font-bold text-gray-900 dark:text-white mb-1">Teléfono</p>
                   <a
-                    href="tel:+51940226938"
+                    href="tel:+5154221478"
                     className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-fv-gold transition-colors"
                   >
-                    +51 940 226 938
+                    +51 54221478
                   </a>
                 </div>
               </motion.div>
-            </div>
 
-            <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-6 text-gray-900 dark:text-white">Horario de Atención</h3>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center py-2 px-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">Lunes a Viernes</span>
-                  <span className="text-sm text-gray-600 dark:text-gray-400">9:00 AM - 7:00 PM</span>
+              <motion.a
+                whileHover={{ x: 4 }}
+                className="flex items-start"
+                href="https://www.atom.bio/frankompetition"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-fv-gold flex items-center justify-center shadow-lg">
+                  <FaLink className="h-6 w-6 text-white" />
                 </div>
-                <div className="flex justify-between items-center py-2 px-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">Sábados</span>
-                  <span className="text-sm text-gray-600 dark:text-gray-400">10:00 AM - 5:00 PM</span>
+                <div className="ml-5">
+                  <p className="text-sm font-bold text-gray-900 dark:text-white mb-1">Canales oficiales</p>
+                  <span className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-fv-gold transition-colors">
+                    atom.bio/frankompetition
+                  </span>
                 </div>
-                <div className="flex justify-between items-center py-2 px-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">Domingos</span>
-                  <span className="text-sm text-red-600 dark:text-red-400 font-semibold">Cerrado</span>
-                </div>
-              </div>
+              </motion.a>
             </div>
           </motion.div>
 
@@ -577,23 +577,28 @@ const Contacto = () => {
           </motion.div>
         </div>
 
-        {/* Mapa */}
+        {/* Envíos nacionales */}
         <motion.div
           variants={itemVariants}
-          className="mt-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-2xl p-4 shadow-xl border border-gray-200 dark:border-gray-800"
+          className="mt-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-2xl p-10 shadow-xl border border-gray-200 dark:border-gray-800 text-center"
         >
-          <div className="rounded-xl overflow-hidden h-[400px] w-full">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3901.964676337575!2d-77.04279302586676!3d-12.046373088191246!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c8b66725e275%3A0x627254562545656!2sLima%2C%20Per%C3%fa!5e0!3m2!1ses!2sus!4v1709925687456!5m2!1ses!2sus"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              className="grayscale hover:grayscale-0 transition-all duration-500"
-            ></iframe>
-          </div>
+          <h3 className="text-2xl md:text-3xl font-black mb-3 bg-gradient-to-r from-primary to-fv-gold bg-clip-text text-transparent">
+            Envíos a nivel nacional
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-6">
+            Consultas, cotizaciones y seguimiento directo por WhatsApp para todo el Perú.
+          </p>
+          <motion.a
+            href="https://wa.me/5154221478?text=Hola%2C%20quiero%20asesor%C3%ADa%20sobre%20repuestos%20y%20accesorios"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            className="inline-flex items-center gap-2 py-3 px-6 rounded-xl text-white bg-gradient-to-r from-green-500 to-green-600 shadow-lg font-semibold"
+          >
+            <FaWhatsapp className="text-lg" />
+            Escríbenos por WhatsApp
+          </motion.a>
         </motion.div>
       </motion.div>
     </div>

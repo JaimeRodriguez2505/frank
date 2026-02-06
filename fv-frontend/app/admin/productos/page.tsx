@@ -576,6 +576,38 @@ function ProductosAdmin() {
         }
       }
 
+      // Nuevos campos de producto (compatibilidad, origen, marca, peso, condicion, disponibilidad)
+      const compatibilidad = formData.get("compatibilidad")
+      if (compatibilidad !== null && String(compatibilidad).trim() !== "") {
+        apiForm.append("compatibilidad", String(compatibilidad))
+      }
+
+      const origen = formData.get("origen")
+      if (origen !== null && String(origen).trim() !== "") {
+        apiForm.append("origen", String(origen))
+      }
+
+      const marca = formData.get("marca")
+      if (marca !== null && String(marca).trim() !== "") {
+        apiForm.append("marca", String(marca))
+      }
+
+      const peso = formData.get("peso")
+      if (peso !== null && String(peso).trim() !== "") {
+        const p = Number(String(peso).trim())
+        if (!Number.isNaN(p)) apiForm.append("peso", String(p))
+      }
+
+      const condicion = formData.get("condicion")
+      if (condicion !== null && String(condicion).trim() !== "") {
+        apiForm.append("condicion", String(condicion))
+      }
+
+      const disponibilidad = formData.get("disponibilidad")
+      if (disponibilidad !== null && String(disponibilidad).trim() !== "") {
+        apiForm.append("disponibilidad", String(disponibilidad))
+      }
+
       // Copiar imágenes adicionales
       const additionalImages = formData.getAll("images[]")
       console.log(`🖼️ Copying ${additionalImages.length} additional images to apiForm`)

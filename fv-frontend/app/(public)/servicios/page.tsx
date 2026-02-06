@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion"
 import {
-  Settings,
   Package,
   Zap,
   Gauge,
@@ -11,8 +10,7 @@ import {
   CheckCircle2,
   Sparkles,
   Award,
-  ShieldCheck,
-  TrendingUp
+  ShieldCheck
 } from "lucide-react"
 
 const containerVariants = {
@@ -38,63 +36,64 @@ const itemVariants = {
 const Servicios = () => {
   const mainServices = [
     {
-      icon: Settings,
-      title: "Tuning",
-      description: "Optimización y personalización completa de motores",
-      image: "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=1974&auto=format&fit=crop",
+      icon: Globe,
+      title: "Importación Directa",
+      description: "Traemos repuestos y accesorios directamente del extranjero, sin intermediarios.",
+      image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=2072&auto=format&fit=crop",
       features: [
-        "Reprogramación ECU",
-        "Sistemas de escape personalizados",
-        "Admisión de aire optimizada",
-        "Turbo upgrades"
+        "Originalidad",
+        "Mejor precio",
+        "Tiempos claros",
+        "Proceso seguro"
       ]
     },
     {
       icon: Package,
-      title: "Repuestos Originales",
-      description: "Importación de repuestos y accesorios de alta calidad",
-      image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=2072&auto=format&fit=crop",
+      title: "Repuestos Deportivos",
+      description: "Catálogo especializado en performance real y estética deportiva.",
+      image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=1964&auto=format&fit=crop",
       features: [
-        "Piezas OEM certificadas",
-        "Marcas premium internacionales",
-        "Garantía de autenticidad",
-        "Envío directo desde origen"
+        "Accesorios internos y externos",
+        "Sistema eléctrico y/o componentes",
+        "Performance (turbos, admisión, frenos, etc.)",
+        "Sistemas de suspensión y frenos",
+        "Tuning y estética deportiva"
       ]
     },
     {
-      icon: Zap,
-      title: "Racing & Performance",
-      description: "Componentes de alto rendimiento para competición",
-      image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=1964&auto=format&fit=crop",
+      icon: Wrench,
+      title: "Pedidos Especiales",
+      description: "Buscamos, cotizamos e importamos el repuesto que no encuentras.",
+      image: "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=1974&auto=format&fit=crop",
       features: [
-        "Suspensiones deportivas",
-        "Frenos de alta performance",
-        "Neumáticos racing",
-        "Sistemas de telemetría"
+        "Búsqueda y cotización",
+        "Importación bajo pedido",
+        "Seguimiento completo",
+        "Recomendaciones personalizadas"
       ]
     }
   ]
 
   const additionalServices = [
     {
-      icon: Globe,
-      title: "Importación Personalizada",
-      description: "Traemos cualquier pieza del mundo directamente para ti. Contamos con conexiones internacionales con los mejores proveedores."
+      icon: ShieldCheck,
+      title: "Reparación de tapas de timón (airbag)",
+      description: "Reparación especializada para tapas de timón, con acabado seguro y prolijo."
     },
     {
-      icon: TrendingUp,
-      title: "Turbos & Superchargers",
-      description: "Especialistas en sistemas de sobrealimentación. Instalación, mantenimiento y upgrades de turbos y superchargers."
+      icon: Sparkles,
+      title: "Atención Personalizada",
+      description: "Atención directa y rápida por WhatsApp para cotizaciones, consultas técnicas y seguimiento."
     },
     {
       icon: Gauge,
-      title: "Performance Upgrades",
-      description: "Mejoras integrales de rendimiento. Desde intake y exhaust hasta conversiones completas de motor."
+      title: "Asesoría Especializada",
+      description: "Te asesoramos según marca, modelo, año y objetivo de tu auto."
     },
     {
-      icon: Wrench,
-      title: "Instalación Profesional",
-      description: "Equipo de técnicos certificados con años de experiencia. Instalación garantizada de todas las piezas importadas."
+      icon: Zap,
+      title: "Planchado y pintura",
+      description: "Acabados y pintura con enfoque detallista para una estética impecable."
     }
   ]
 
@@ -144,11 +143,11 @@ const Servicios = () => {
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed font-light">
-              Especialistas en importación de piezas automotrices, tuning y performance upgrades
+              Repuestos deportivos | Importación directa | Performance real | Planchado y pintura
             </p>
           </motion.div>
 
-          {/* Stats */}
+          {/* Highlights */}
           <motion.div
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -156,24 +155,29 @@ const Servicios = () => {
             className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 max-w-4xl mx-auto"
           >
             {[
-              { number: "500+", label: "Piezas Importadas" },
-              { number: "150+", label: "Clientes Satisfechos" },
-              { number: "15+", label: "Países de Origen" }
-            ].map((stat, index) => (
+              { icon: Globe, title: "Importación directa", text: "Originalidad, mejor precio y tiempos claros." },
+              { icon: ShieldCheck, title: "Productos originales", text: "Repuestos auténticos y alternativos de marcas internacionales." },
+              { icon: Gauge, title: "Performance real", text: "Mejora de respuesta, potencia y estética del vehículo." }
+            ].map((stat, index) => {
+              const IconComponent = stat.icon
+              return (
               <motion.div
                 key={index}
                 whileHover={{ y: -4, scale: 1.02 }}
                 className="group relative bg-white/70 dark:bg-gray-900/70 backdrop-blur-2xl rounded-3xl p-8 shadow-xl border border-gray-200/50 dark:border-gray-800/50 hover:border-primary/30 dark:hover:border-primary/30 transition-all duration-500"
               >
                 <div className="absolute -inset-0.5 bg-gradient-to-br from-primary/20 to-fv-gold/20 rounded-3xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 -z-10"></div>
-                <div className="text-5xl md:text-6xl font-black bg-gradient-to-r from-primary via-fv-gold to-primary bg-clip-text text-transparent bg-[length:200%_auto]">
-                  {stat.number}
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-fv-gold flex items-center justify-center shadow-lg mb-5">
+                  <IconComponent className="w-7 h-7 text-white" strokeWidth={2.5} />
                 </div>
-                <div className="text-gray-600 dark:text-gray-300 mt-3 font-medium tracking-wide">
-                  {stat.label}
+                <div className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  {stat.title}
+                </div>
+                <div className="text-gray-600 dark:text-gray-300 font-light">
+                  {stat.text}
                 </div>
               </motion.div>
-            ))}
+            )})}
           </motion.div>
         </div>
       </motion.section>
@@ -309,16 +313,17 @@ const Servicios = () => {
         <div className="max-w-7xl mx-auto">
           <motion.div variants={itemVariants} className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4">
-              ¿Por qué elegirnos?
+              ¿Qué nos diferencia?
             </h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { icon: ShieldCheck, title: "Calidad Garantizada", text: "Solo trabajamos con proveedores certificados" },
-              { icon: Globe, title: "Alcance Global", text: "Importamos desde cualquier parte del mundo" },
-              { icon: Gauge, title: "Rapidez", text: "Procesos de importación optimizados" },
-              { icon: Award, title: "Soporte Técnico", text: "Asesoría especializada en cada paso" }
+              { icon: Globe, title: "Importación directa", text: "Eliminamos intermediarios con tiempos claros y proceso seguro." },
+              { icon: ShieldCheck, title: "Productos originales", text: "Repuestos auténticos y alternativos de marcas internacionales." },
+              { icon: Gauge, title: "Especialistas en performance", text: "Piezas pensadas para mejorar respuesta, potencia y estética." },
+              { icon: Award, title: "Compra segura", text: "Compatibilidad perfecta y respaldo real en cada compra." },
+              { icon: Sparkles, title: "Atención humana", text: "Asesoría personalizada, no automática." }
             ].map((item, index) => {
               const IconComponent = item.icon
               return (

@@ -37,6 +37,12 @@ class ProductResource extends JsonResource
             'stock' => $this->stock,
             'SKU' => $this->SKU,
             'imagen' => $this->imagen, // Imagen principal
+            'compatibilidad' => $this->compatibilidad,
+            'origen' => $this->origen,
+            'marca' => $this->marca,
+            'peso' => $this->peso ? (float) $this->peso : null,
+            'condicion' => $this->condicion,
+            'disponibilidad' => $this->disponibilidad,
             'images' => $this->whenLoaded('images', function () {
                 return $this->images->map(function ($image) {
                     return [
